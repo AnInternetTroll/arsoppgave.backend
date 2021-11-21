@@ -1,22 +1,22 @@
-import { Model, DataTypes } from "../deps.ts";
-import { User } from "./user.ts";
+import { DataTypes, Model, snowflake } from "../deps.ts";
+import { User } from "./mod.ts";
 import { generateSalt } from "../utils/auth.ts";
 
 export class UserLocal extends Model {
-  static table = 'users';
-  static timestamps = true;
+	static table = "users_local";
+	static timestamps = true;
 
-  static fields = {
-    id: { primaryKey: true, autoIncrement: true, },
-    hash: {type: DataTypes.STRING, allowNull: false },
-    salt: { type: DataTypes.STRING, allowNull: false },
-  };
+	id!: string;
+	hash!: string;
+	salt!: string;
 
-  static user() {
-    this.hasOne(User)
-  }
+	static fields = {
+		id: { primaryKey: true, autoIncrement: false, type: DataTypes.STRING },
+		hash: { type: DataTypes.STRING, allowNull: false },
+		salt: { type: DataTypes.STRING, allowNull: false },
+	};
 
-  static defaults = {
-    salt: generateSalt
-  };
+	static user() {
+		return this.hasOne(User) as Promise<User>;
+	}
 }

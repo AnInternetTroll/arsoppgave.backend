@@ -1,8 +1,8 @@
 interface IConfig {
-  // HTTP port to be used
-  port: number;
-  // File path to sqlite database
-  sqlite: string;
+	// HTTP port to be used
+	PORT: number;
+	// File path to sqlite database
+	SQLITE: string;
 }
 
 // @ts-ignore TODO: type conversion

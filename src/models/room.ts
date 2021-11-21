@@ -1,16 +1,22 @@
 import { DataTypes, Model } from "../deps.ts";
 import { User } from "./mod.ts";
 
-export class UserDiscord extends Model {
-	static table = "users_discord";
+export class Room extends Model {
+	static table = "rooms";
 	static timestamps = true;
+	id!: number;
+	read!: boolean;
 
 	static fields = {
 		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },
-		discord_id: { type: DataTypes.STRING, allowNull: false },
+		read: DataTypes.BOOLEAN,
 	};
 
-	static user() {
-		return this.hasOne(User) as Promise<User>;
+	static users() {
+		return this.hasMany(User);
 	}
+
+	static defaults = {
+		read: true,
+	};
 }
