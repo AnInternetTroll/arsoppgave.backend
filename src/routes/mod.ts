@@ -1,11 +1,51 @@
-import { join, relative, Router } from "../deps.ts";
+import { join, log, relative, Router } from "../deps.ts";
 import type { Route } from "../middleware/types.d.ts";
 
 export const router = new Router();
 
+// How else should I check for route if idk what route is
+// deno-lint-ignore no-explicit-any
+function isRoute(route: any): route is Route {
+	if ("GET" in route) {
+		const keys = Object.keys(route);
+		if (
+			keys.filter((a) =>
+				a === "GET" || a === "POST" || a === "PATCH" || a === "DELETE"
+			).length === keys.length
+		) {
+			return true;
+		}
+	}
+	return false;
+}
+
 /**
  * Add routes to `router` from a folder.
+ * A route is any JS or TS file that can be imported.
+ * For example
+ *
+ * ```
+ * hello/
+ *   world.ts
+ * ```
+ *
+ * Will give us the route `/hello/world`
+ *
+ * ```
+ * hello/
+ *   world/
+ *     [id].ts
+ *     index.ts
+ *     beep.ts
+ * ```
+ *
+ * Will give us
+ * `/hello/world/:id`
+ * `/hello/world`
+ * `/hello/world/beep`
+ *
  * @param dir A URL to the folder with files that export `Route`s
+ * @param router The router where those routes get added
  */
 async function readDir(dir: URL, router: Router): Promise<void> {
 	for await (const file of Deno.readDir(dir)) {
@@ -19,11 +59,20 @@ async function readDir(dir: URL, router: Router): Promise<void> {
 			await readDir(new URL(path, import.meta.url), router);
 			continue;
 		}
+		let routes: Route;
+		try {
+			// Import the routes and name them something better than `default`
+			routes = (await import(
+				new URL(path, import.meta.url).toString()
+			)).default;
 
-		// Import the routes and name them something better than `default`
-		const { default: routes } = await import(
-			new URL(path, import.meta.url).toString()
-		) as { default: Route };
+			if (!isRoute(routes)) continue;
+		} catch (err) {
+			// If there's an error in a route then don't crash the server
+			// Possible use case can also be having utility files with functions and stuff other than routes
+			log.error(err);
+			continue;
+		}
 
 		// Each route has methods, such as GET, POST, etc as keys.
 		for (const method in routes) {

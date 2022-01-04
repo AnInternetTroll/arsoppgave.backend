@@ -8,22 +8,20 @@ export {
 	DataTypes,
 	Model,
 	PostgresConnector,
-	SQLite3Connector,
 	Relationships,
+	SQLite3Connector,
 } from "https://deno.land/x/denodb@v1.0.40/mod.ts";
 
 // The HTTP library, handles all requests and responses
-export type {
-	Context,
-	ErrorStatus,
-	Middleware,
-	Route,
-} from "https://deno.land/x/oak@v10.1.0/mod.ts";
 export {
 	Application,
 	helpers,
 	Router,
 	Status,
+	Context,
+	type ErrorStatus,
+	type Middleware,
+	type Route,
 } from "https://deno.land/x/oak@v10.1.0/mod.ts";
 
 // Utilities
@@ -38,3 +36,4 @@ export {
 	normalize,
 	relative,
 } from "https://deno.land/std@0.119.0/path/mod.ts";
+export * as log from "https://deno.land/std@0.119.0/log/mod.ts";

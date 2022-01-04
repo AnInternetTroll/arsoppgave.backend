@@ -1,6 +1,6 @@
-import { Database, SQLite3Connector, Relationships, } from "../deps.ts";
+import { Database, log, Relationships, SQLite3Connector } from "../deps.ts";
 import { config } from "../config.ts";
-import { User, UserDiscord, UserLocal } from "./mod.ts";
+import { Token, User, UserDiscord, UserLocal } from "./mod.ts";
 
 let connector;
 
@@ -16,15 +16,17 @@ export const db = new Database(connector);
 
 Relationships.belongsTo(UserLocal, User);
 Relationships.belongsTo(UserDiscord, User);
+Relationships.belongsTo(Token, User);
 
 try {
 	db.link([
-		User, 
-		UserLocal, 
-		UserDiscord
+		User,
+		UserLocal,
+		UserDiscord,
+		Token,
 	]);
 	await db.sync({ drop: true });
 } catch (err) {
-	console.log(err);
+	log.error(err);
 	// it's probably ok
 }

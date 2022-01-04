@@ -1,7 +1,14 @@
 {
+	// Not needed for vscode with the deno extension
+	"$schema": "https://deno.land/x/deno@v1.17.1/cli/schemas/config-file.v1.json",
 	"fmt": {
 		"options": {
 			"useTabs": true // Tabs ftw!!!
 		}
+	},
+	"compilerOptions": {
+		"lib": [
+			"deno.unstable"
+		]
 	}
 }

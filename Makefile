@@ -16,7 +16,8 @@ DENO_FLAGS=\
 	--allow-write=database.sqlite,database.sqlite-journal \
 	--allow-env=$(ENV_VARS) \
 	--allow-net \
-	--config=$(CONFIG)
+	--config=$(CONFIG) \
+	--unstable
 
 # If this crashes in prod I better have some good stack trace of it
 run:
@@ -26,7 +27,7 @@ dev:
 	RUST_BACKTRACE=full $(DENO) run --watch $(DENO_FLAGS) src/mod.ts
 
 test:
-	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS)
+	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS) --no-check
 
 fmt:
 	$(DENO) fmt --config=$(CONFIG) .

@@ -1,25 +1,33 @@
+#!/usr/bin/env -S deno run --allow-read=. --allow-write=database.sqlite --allow-net --allow-env=SQLITE,PORT --config=./deno.jsonc --no-check
 import { config } from "./config.ts";
-import { Application } from "./deps.ts";
+import { Application, log } from "./deps.ts";
 import { router } from "./routes/mod.ts";
 import "./models/database.ts";
 
-const app = new Application();
+export const app = new Application();
 
 // `controller.abort()` can close the server gracefully
 // Would use it with the `Deno.addSignalListener` API but it's quite unstable
 // https://github.com/denoland/deno/issues/13271
-const controller = new AbortController();
+export const controller = new AbortController();
 
-app.addEventListener("listen", ({ hostname, port, secure }) =>
-	console.log(
+app.addEventListener("listen", ({ hostname, port, secure }) => {
+	log.info(
 		`Listening on: ${secure ? "https://" : "http://"}${
 			hostname ??
 				"localhost"
 		}:${port}`,
-	));
-app.addEventListener("error", (evt) => console.log(evt.error));
+	);
+});
+app.addEventListener("error", (evt) => log.error(evt.error));
 
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.listen({ port: config.port, signal: controller.signal });
+export function startServer(port = config.port, signal = controller.signal) {
+	return app.listen({ port, signal });
+}
+
+if (import.meta.main) {
+	startServer();
+}
