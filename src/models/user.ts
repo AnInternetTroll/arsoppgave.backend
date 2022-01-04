@@ -1,18 +1,19 @@
-import { Model, DataTypes } from "../deps.ts";
+import { DataTypes, Model } from "../deps.ts";
 
 export class User extends Model {
-  static table = 'users';
-  static timestamps = true;
+	static table = "users";
+	static timestamps = true;
 
-  static fields = {
-    id: { primaryKey: true, autoIncrement: true },
-    username: {type: DataTypes.STRING, unique: true, allowNull: false },
-    email: { type: DataTypes.STRING, unique: true, allowNull: false },
-    role: DataTypes.enum(['user', 'admin', 'super']),
-  };
+	id!: number;
 
-  static defaults = {
-    role: "user",
-  };
+	static fields = {
+		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },
+		username: { type: DataTypes.STRING, unique: true, allowNull: false },
+		email: { type: DataTypes.STRING, unique: true, allowNull: false },
+		role: DataTypes.enum(["user", "admin", "super"]),
+	};
+
+	static defaults = {
+		role: "user",
+	};
 }
-

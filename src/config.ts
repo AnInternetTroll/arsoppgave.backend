@@ -1,9 +1,13 @@
+import "./deps.ts";
+
 interface IConfig {
-  // HTTP port to be used
-  port: number;
-  // File path to sqlite database
-  sqlite: string;
+	// HTTP port to be used
+	port: number;
+	// File path to sqlite database
+	sqlite: string;
 }
 
-// @ts-ignore TODO: type conversion
-export const config: IConfig = Deno.env.toObject() as IConfig;
+export const config: IConfig = {
+	port: parseInt(Deno.env.get("PORT") || "8080"),
+	sqlite: Deno.env.get("SQLITE")!,
+};
