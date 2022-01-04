@@ -1,17 +1,20 @@
 # Frontend
 
 SSR and SPA with [AlephJS](https://alephjs.org/) because:
+
 - Nice SSR
 - Really nice SPA link stuff
 - Easy framework overall
 - Easy locale translating stuff
-- It can export to static pages, for use with possibly [tauri](https://tauri.studio/en/)
+- It can export to static pages, for use with possibly
+  [tauri](https://tauri.studio/en/)
 
 ## Style
 
 Options are:
+
 - Tailwind css
-- Material UI 
+- Material UI
 - Bootstrap
 
 ## Aditional notes
@@ -25,13 +28,15 @@ Options are:
 # Backend
 
 Requirements:
+
 - JWT
 - SQL (sqlite?)
 
 ## Possible libraries?
 
 - [Fresh](https://github.com/lucacasonato/fresh)
-  - (good) Has a pretty nice way to handle requests with the web `Request` and `Response` APIs.
+  - (good) Has a pretty nice way to handle requests with the web `Request` and
+    `Response` APIs.
   - (good) Very close to the Native API.
   - (bad) No middleware support.
 - [Oak](https://oakserver.github.io/oak/)
@@ -44,7 +49,7 @@ Requirements:
 
 - [MongoDB is Web Scale](https://www.youtube.com/watch?v=b2F-DItXtZs)
 - sqlite
-  - Easy to host 
+  - Easy to host
 - PostgreSQL
-  - Actual production database 
+  - Actual production database
   - Array support omg
