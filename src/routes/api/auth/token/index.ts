@@ -36,8 +36,6 @@ export default {
 		});
 
 		// handle expired tokens properly pls!!!
-		console.log(token);
-
 		setTimeout(() => Token.where("token", "=", token).delete(), exp);
 	},
 } as Route;
