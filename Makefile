@@ -17,17 +17,18 @@ DENO_FLAGS=\
 	--allow-env=$(ENV_VARS) \
 	--allow-net \
 	--config=$(CONFIG) \
-	--unstable
+	--unstable \
+	--no-check
 
 # If this crashes in prod I better have some good stack trace of it
 run:
-	RUST_BACKTRACE=full $(DENO) run --no-check $(DENO_FLAGS) src/mod.ts
+	RUST_BACKTRACE=full $(DENO) run $(DENO_FLAGS) src/mod.ts
 
 dev:
 	RUST_BACKTRACE=full $(DENO) run --watch $(DENO_FLAGS) src/mod.ts
 
 test:
-	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS) --no-check
+	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS)
 
 fmt:
 	$(DENO) fmt --config=$(CONFIG) .

@@ -5,6 +5,9 @@ export class User extends Model {
 	static timestamps = true;
 
 	id!: number;
+	username!: string;
+	email!: string;
+	role!: string;
 
 	static fields = {
 		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },

@@ -7,3 +7,4 @@ export {
 	superoak,
 } from "https://deno.land/x/superoak@4.5.0/mod.ts";
 export { delay } from "https://deno.land/std@0.119.0/async/mod.ts";
+export { FakeTime } from "https://deno.land/x/mock@0.12.1/mod.ts";

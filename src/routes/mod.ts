@@ -1,7 +1,28 @@
-import { join, log, relative, Router } from "../deps.ts";
+import { isHttpError, join, log, relative, Router, Status } from "../deps.ts";
 import type { Route } from "../middleware/types.d.ts";
 
 export const router = new Router();
+
+router.use(async (ctx, next) => {
+	try {
+		await next();
+	} catch (err) {
+		if (isHttpError(err)) {
+			ctx.response.status = Status.Unauthorized;
+			switch (err.status) {
+				case Status.Unauthorized: {
+					// Handle here ish stuff
+					break;
+				}
+			}
+			ctx.response.headers.set("content-type", "application/json");
+			ctx.response.body = JSON.stringify({
+				message: err.message,
+				stack: err.stack,
+			});
+		}
+	}
+});
 
 // How else should I check for route if idk what route is
 // deno-lint-ignore no-explicit-any
@@ -88,9 +109,9 @@ async function readDir(dir: URL, router: Router): Promise<void> {
 					/\[(.*?)\]/g,
 					":$1",
 				).replace(/(\.ts)|(\.js)|(\/index(\.ts|\.js))/, "");
-
-			// @ts-ignore The routes are defined in the `Route` object keys, so this should work
-			router[method.toLowerCase()](
+			log.debug(urlPath, method);
+			// @ts-ignore why
+			router[method.toLowerCase() as "get" | "post" | "patch" | "delete"](
 				urlPath,
 				// @ts-ignore same thing
 				routes[method],

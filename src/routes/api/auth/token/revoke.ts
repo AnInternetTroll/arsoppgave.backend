@@ -1,4 +1,5 @@
 import { Status } from "../../../../deps.ts";
+import { restrict } from "../../../../middleware/auth.ts";
 import type { Route } from "../../../../middleware/types.d.ts";
 import { Token } from "../../../../models/mod.ts";
 
@@ -6,26 +7,19 @@ export default {
 	GET(ctx) {
 		ctx.throw(Status.NotFound);
 	},
-	async POST(ctx) {
-		const header = ctx.request.headers.get("authorization");
-		if (!header) {
-			return ctx.throw(Status.Unauthorized, "No Authorization header provided");
+	async POST(ctx, next) {
+		const user = await restrict(ctx);
+		if (!user) return await next();
+
+		const bodyObj = ctx.request.body();
+		if (bodyObj.type !== "json") {
+			ctx.throw(Status.BadRequest, "Only JSON allowed");
 		}
+		const body: { token: string } = await bodyObj.value;
 
-		const methodAndValue = header.split(" ");
+		if (!("token" in body)) ctx.throw(Status.BadRequest, "No token provided");
 
-		if (methodAndValue.length !== 2) {
-			return ctx.throw(
-				Status.Unauthorized,
-				"Too many spaces in the authorization header",
-			);
-		}
-
-		const [method, value] = methodAndValue;
-
-		if (method !== "Bearer") ctx.throw(Status.Unauthorized, "Bad method");
-
-		await Token.where("token", "=", value).delete();
+		await Token.where("token", "=", body.token).delete();
 
 		ctx.response.status = Status.NoContent;
 	},

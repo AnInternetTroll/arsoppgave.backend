@@ -13,18 +13,21 @@ export default {
 	async GET(ctx) {
 		const params = helpers.getQuery(ctx, { mergeParams: true });
 
-		if ("limit" in params && parseInt(params.limit) > 200) params.limit = "200";
+		let query = User;
 
-		let query = User.limit(parseInt(params.limit) || 20)
-			.offset(parseInt(params.offset) || 0).orderBy(params.orderby || "");
+		if ("limit" in params && parseInt(params.limit) > 200) {
+			query = User.limit(parseInt(params.limit) || 20);
+		}
+		if ("offset" in params) query = query.offset(parseInt(params.offset) || 0);
+		if ("orderby" in params) query = query.orderBy(params.orderby || "");
 
 		if ("username" in params) {
 			query = query.where("username", "like", params.username);
 		}
 
-		const users = await query.get() as User[];
+		const users = await query.get();
 
 		ctx.response.headers.set("content-type", "application/json");
-		ctx.response.body = JSON.stringify(users);
+		ctx.response.body = JSON.stringify(Array.isArray(users) ? users : [users]);
 	},
 } as Route;

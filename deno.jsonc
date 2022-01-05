@@ -5,10 +5,5 @@
 		"options": {
 			"useTabs": true // Tabs ftw!!!
 		}
-	},
-	"compilerOptions": {
-		"lib": [
-			"deno.unstable"
-		]
 	}
 }

@@ -15,13 +15,14 @@ export {
 // The HTTP library, handles all requests and responses
 export {
 	Application,
-	helpers,
-	Router,
-	Status,
 	Context,
 	type ErrorStatus,
+	helpers,
+	isHttpError,
 	type Middleware,
 	type Route,
+	Router,
+	Status,
 } from "https://deno.land/x/oak@v10.1.0/mod.ts";
 
 // Utilities
@@ -37,3 +38,7 @@ export {
 	relative,
 } from "https://deno.land/std@0.119.0/path/mod.ts";
 export * as log from "https://deno.land/std@0.119.0/log/mod.ts";
+export {
+	Session,
+	SqliteStore,
+} from "https://deno.land/x/oak_sessions@v3.2.3/mod.ts";
