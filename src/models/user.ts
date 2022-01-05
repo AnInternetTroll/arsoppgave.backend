@@ -7,7 +7,7 @@ export class User extends Model {
 	id!: number;
 	username!: string;
 	email!: string;
-	role!: string;
+	role!: "user" | "admin" | "super";
 
 	static fields = {
 		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },

@@ -1,3 +1,5 @@
 .env
 *.sqlite
 *.sqlite-journal
+coverage
+*.info

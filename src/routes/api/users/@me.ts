@@ -9,6 +9,9 @@ export default {
 		if (!user) return await next();
 
 		ctx.response.headers.set("content-type", "application/json");
+
+		// @ts-ignore Deleting this since it's private information
+		delete user.email;
 		ctx.response.body = JSON.stringify(user);
 	},
 	async DELETE(ctx, next) {
@@ -25,6 +28,13 @@ export default {
 	async PATCH(ctx, next) {
 		const user = await restrict(ctx);
 		if (!user) return await next();
+
+		if (user.role === "super") {
+			return ctx.throw(
+				Status.Forbidden,
+				"Superes may only be changed with the config file.",
+			);
+		}
 
 		const bodyObj = ctx.request.body();
 

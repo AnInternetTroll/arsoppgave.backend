@@ -3,7 +3,7 @@ DENO=deno
 
 # These are the variables the server uses
 # They should be also put in a `.env` file
-ENV_VARS=PORT,SQLITE
+ENV_VARS=PORT,SQLITE,ADMIN_USERNAME,ADMIN_PASSWORD,ADMIN_EMAIL
 
 # This configuration file is used for `fmt` and `lint`
 # But if needed it can be used for `compilerOptions` as well to customise typescript
@@ -28,7 +28,11 @@ dev:
 	RUST_BACKTRACE=full $(DENO) run --watch $(DENO_FLAGS) src/mod.ts
 
 test:
-	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS)
+	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS) --coverage=coverage
+
+coverage: 
+	$(DENO) coverage coverage --lcov > lcov.info
+
 
 fmt:
 	$(DENO) fmt --config=$(CONFIG) .

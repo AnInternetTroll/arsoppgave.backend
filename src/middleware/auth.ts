@@ -98,7 +98,7 @@ export const restrict: (ctx: Context) => Promise<false | User> = async (
 
 			// @ts-ignore DenoDB types are wack
 			// https://eveningkid.com/denodb-docs/docs/guides/foreign-key#query-models
-			user = await tokenOld.user?.();
+			user = await User.find(tokenOld.userId);
 
 			break;
 		}
