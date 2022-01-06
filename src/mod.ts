@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-read=. --allow-write=database.sqlite --allow-net --allow-env=SQLITE,PORT --config=./deno.jsonc --no-check
 import { config } from "./config.ts";
-import { Application, isHttpError, log, Status } from "./deps.ts";
+import { Application, log } from "./deps.ts";
 import { router } from "./routes/mod.ts";
 import "./models/database.ts";
 

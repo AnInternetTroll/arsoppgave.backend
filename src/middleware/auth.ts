@@ -42,12 +42,17 @@ export const restrict: (ctx: Context) => Promise<false | User> = async (
 
 	let user: User;
 
+	let decodedValue: string;
 	switch (method.toLowerCase()) {
 		// If basic then the value should be
 		// btoa(email + ":" + password)
 		case "basic": {
-			const decodedValue = atob(value);
-
+			try {
+				decodedValue = atob(value);
+			} catch {
+				ctx.throw(Status.Unauthorized, "Invalid Basic value");
+				return false;
+			}
 			const emailAndPassword = decodedValue.split(":");
 
 			if (emailAndPassword.length !== 2) {

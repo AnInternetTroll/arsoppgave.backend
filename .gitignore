@@ -2,4 +2,5 @@
 *.sqlite
 *.sqlite-journal
 coverage
+cov
 *.info

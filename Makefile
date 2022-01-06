@@ -28,16 +28,17 @@ dev:
 	RUST_BACKTRACE=full $(DENO) run --watch $(DENO_FLAGS) src/mod.ts
 
 test:
-	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS) --coverage=coverage
+	rm -rf cov
+	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS) --coverage=cov
 
 coverage: 
-	$(DENO) coverage coverage --lcov > lcov.info
-
+	$(DENO) coverage cov --lcov > lcov.info
+	genhtml -o cov/html lcov.info
 
 fmt:
-	$(DENO) fmt --config=$(CONFIG) .
+	$(DENO) fmt --config=$(CONFIG) --ignore=cov 
 
 lint:
 	$(DENO) lint --config=$(CONFIG)
 
-prep: fmt lint test
+prep: fmt lint test coverage
