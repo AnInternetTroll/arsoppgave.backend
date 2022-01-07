@@ -19,7 +19,10 @@ export default {
 
 		if (!("token" in body)) ctx.throw(Status.BadRequest, "No token provided");
 
-		await Token.where("token", "=", body.token).delete();
+		const token = await Token.where("token", "=", body.token).first() as Token;
+
+		if (token.userId === user.id) await token.delete();
+		else return ctx.throw(Status.Forbidden);
 
 		ctx.response.status = Status.NoContent;
 	},

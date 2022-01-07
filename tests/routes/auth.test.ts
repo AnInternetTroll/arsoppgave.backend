@@ -36,7 +36,7 @@ Deno.test({
 					await request.get("/api/auth/token").set(
 						"authorization",
 						`Basic ${btoa(`${email}:${password}`)}`,
-					).expect(Status.OK);
+					).expect(Status.OK).expect("Content-Type", "application/json");
 
 					time.tick(120 * 60 * 1000); // 120min
 				} finally {
@@ -56,12 +56,12 @@ Deno.test({
 					const tokenResponse = await request.get("/api/auth/token").set(
 						"authorization",
 						`Basic ${btoa(`${email}:${password}`)}`,
-					).expect(Status.OK);
+					).expect(Status.OK).expect("Content-Type", "application/json");
 
 					const userMeResponse = await request2.get("/api/users/@me").set(
 						"authorization",
 						`Bearer ${tokenResponse.body.token}`,
-					).expect(Status.OK);
+					).expect(Status.OK).expect("Content-Type", "application/json");
 
 					user = userMeResponse.body;
 
@@ -86,7 +86,8 @@ Deno.test({
 				const request = await superoak(app);
 
 				const response = await request.get(`/api/users/${user.id}`)
-					.expect(Status.OK);
+					.expect(Status.OK)
+					.expect("Content-Type", "application/json");
 
 				const { body } = response;
 
@@ -95,6 +96,40 @@ Deno.test({
 			},
 		});
 		assert(getUserById);
+
+		const wrongPassword = await t.step({
+			name: "wrong-password",
+			async fn() {
+				const request = await superoak(app);
+
+				await request.get("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email}:testytest`)}`,
+				)
+					.expect(Status.Unauthorized).expect(
+						"Content-Type",
+						"application/json",
+					);
+			},
+		});
+		assert(wrongPassword);
+
+		const wrongEmail = await t.step({
+			name: "wrong-email",
+			async fn() {
+				const request = await superoak(app);
+
+				await request.get("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`test@localhost.com:${password}`)}`,
+				)
+					.expect(Status.Unauthorized).expect(
+						"Content-Type",
+						"application/json",
+					);
+			},
+		});
+		assert(wrongEmail);
 
 		const deleteSuccess = await t.step({
 			name: "delete",
@@ -115,7 +150,10 @@ Deno.test({
 	async fn() {
 		const request = await superoak(app);
 
-		await request.get("/api/users/@me").expect(Status.Unauthorized);
+		await request.get("/api/users/@me").expect(Status.Unauthorized).expect(
+			"Content-Type",
+			"application/json",
+		);
 	},
 });
 
@@ -145,33 +183,7 @@ Deno.test({
 			.send(JSON.stringify({
 				username,
 				password,
-			})).expect(Status.BadRequest);
-	},
-});
-
-Deno.test({
-	name: "wrong-password",
-	async fn() {
-		const request = await superoak(app);
-
-		await request.get("/api/users/@me").set(
-			"authorization",
-			`Basic ${btoa(`${email}:testytest`)}`,
-		)
-			.expect(Status.Unauthorized);
-	},
-});
-
-Deno.test({
-	name: "wrong-email",
-	async fn() {
-		const request = await superoak(app);
-
-		await request.get("/api/users/@me").set(
-			"authorization",
-			`Basic ${btoa(`test@localhost.com:${password}`)}`,
-		)
-			.expect(Status.Unauthorized);
+			})).expect(Status.BadRequest).expect("Content-Type", "application/json");
 	},
 });
 
@@ -184,7 +196,7 @@ Deno.test({
 			"authorization",
 			"Bearer helloworld",
 		)
-			.expect(Status.Unauthorized);
+			.expect(Status.Unauthorized).expect("Content-Type", "application/json");
 	},
 });
 
@@ -197,7 +209,7 @@ Deno.test({
 			"authorization",
 			"Basic hello world",
 		)
-			.expect(Status.Unauthorized);
+			.expect(Status.Unauthorized).expect("Content-Type", "application/json");
 	},
 });
 
@@ -210,7 +222,7 @@ Deno.test({
 			"authorization",
 			`Basic ${btoa("helloworld")}`,
 		)
-			.expect(Status.Unauthorized);
+			.expect(Status.Unauthorized).expect("Content-Type", "application/json");
 	},
 });
 
@@ -223,7 +235,7 @@ Deno.test({
 			"authorization",
 			`Basic ${btoa("hello:world:!")}`,
 		)
-			.expect(Status.Unauthorized);
+			.expect(Status.Unauthorized).expect("Content-Type", "application/json");
 	},
 });
 
@@ -233,7 +245,7 @@ Deno.test({
 		const request = await superoak(app);
 
 		await request.get("/api/users/@me").set("authorization", "Basic ø")
-			.expect(Status.Unauthorized);
+			.expect(Status.Unauthorized).expect("Content-Type", "application/json");
 	},
 });
 
@@ -246,6 +258,6 @@ Deno.test({
 			"authorization",
 			"Hacker beepboop",
 		)
-			.expect(Status.Unauthorized);
+			.expect(Status.Unauthorized).expect("Content-Type", "application/json");
 	},
 });

@@ -16,11 +16,11 @@ export default {
 		// 120 min
 		const expirationDefault = 120 * 60 * 1000;
 		const expParam = parseInt(params.exp);
-
+		const expirationTime = expirationDefault >= expParam
+			? expParam
+			: expirationDefault;
 		// Don't allow anything longer than 2 hours
-		const exp = Date.now() +
-			(expirationDefault >= expParam ? expParam : expirationDefault);
-
+		const exp = Date.now() + expirationTime;
 		await Token.create({
 			exp,
 			token,
@@ -36,6 +36,6 @@ export default {
 		});
 
 		// handle expired tokens properly pls!!!
-		setTimeout(() => Token.where("token", "=", token).delete(), exp);
+		setTimeout(() => Token.where("token", "=", token).delete(), expirationTime);
 	},
 } as Route;
