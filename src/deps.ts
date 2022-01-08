@@ -49,7 +49,6 @@ await log.setup({
 			filename: "./server.log",
 			formatter: "{levelName} {msg}",
 		}),
-
 	},
 
 	loggers: {

@@ -73,12 +73,44 @@ Deno.test({
 					assert(typeof user.id === "number");
 
 					time.tick(120 * 60 * 1000); // 120min
+					const tokenExpiredRequest = await superoak(app);
+
+					await tokenExpiredRequest.get("/api/users/@me").set(
+						"authorization",
+						`Bearer ${tokenResponse.body.token}`,
+					).expect(Status.Forbidden).expect("Content-Type", "application/json");
 				} finally {
 					time.restore();
 				}
 			},
 		});
 		assert(loginBearerSuccess);
+
+		const tokenRevoke = await t.step({
+			name: "token-revoke",
+			async fn() {
+				const time = new FakeTime();
+				try {
+					const request = await superoak(app);
+					const tokenResponse = await request.get("/api/auth/token?exp=500")
+						.set(
+							"authorization",
+							`Basic ${btoa(`${email}:${password}`)}`,
+						).expect(Status.OK).expect("Content-Type", "application/json");
+					const revokeTokenRequest = await superoak(app);
+					await revokeTokenRequest.post("/api/auth/token/revoke").set(
+						"authorization",
+						`Basic ${btoa(`${email}:${password}`)}`,
+					).send({
+						token: tokenResponse.body.token,
+					}).expect(Status.NoContent);
+					time.tick(500);
+				} finally {
+					time.restore();
+				}
+			},
+		});
+		assert(tokenRevoke);
 
 		const getUserById = await t.step({
 			name: "user-by-id",
@@ -151,6 +183,31 @@ Deno.test({
 		const request = await superoak(app);
 
 		await request.get("/api/users/@me").expect(Status.Unauthorized).expect(
+			"Content-Type",
+			"application/json",
+		);
+	},
+});
+
+Deno.test({
+	name: "unauthenticated-revoke",
+	async fn() {
+		const request = await superoak(app);
+
+		await request.post("/api/auth/token/revoke").expect(Status.Unauthorized)
+			.expect(
+				"Content-Type",
+				"application/json",
+			);
+	},
+});
+
+Deno.test({
+	name: "unauthenticated-token",
+	async fn() {
+		const request = await superoak(app);
+
+		await request.get("/api/auth/token").expect(Status.Unauthorized).expect(
 			"Content-Type",
 			"application/json",
 		);

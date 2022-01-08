@@ -112,6 +112,7 @@ async function readDir(dir: URL, router: Router): Promise<void> {
 
 			log.debug(`${urlPath} ${method}`);
 
+			// @ts-ignore why are you like this typescript
 			router[method.toLowerCase() as "get" | "post" | "patch" | "delete"](
 				urlPath,
 				// @ts-ignore Dynamic types are wack, so just trust me on this
