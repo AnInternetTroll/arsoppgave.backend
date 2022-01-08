@@ -21,8 +21,10 @@ export default {
 
 		const token = await Token.where("token", "=", body.token).first() as Token;
 
+		if (!token) return ctx.throw(Status.NotFound, "No token found");
+
 		if (token.userId === user.id) await token.delete();
-		else return ctx.throw(Status.Forbidden);
+		else return ctx.throw(Status.NotFound, "No token found");
 
 		ctx.response.status = Status.NoContent;
 	},

@@ -112,6 +112,108 @@ Deno.test({
 		});
 		assert(tokenRevoke);
 
+		const revokeBadBody = await t.step({
+			name: "revoke-bad-body",
+			async fn() {
+				const request = await superoak(app);
+				await request.post("/api/auth/token/revoke").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "multipart/form-data").send(new URLSearchParams({
+					test: "boop",
+				}).toString()).expect(Status.BadRequest).expect(
+					"Content-Type",
+					"application/json",
+				);
+			},
+		});
+		assert(revokeBadBody);
+
+		const revokeNoToken = await t.step({
+			name: "revoke-no-token",
+			async fn() {
+				const request = await superoak(app);
+				await request.post("/api/auth/token/revoke").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					test: "boop",
+				})).expect(Status.BadRequest).expect(
+					"Content-Type",
+					"application/json",
+				);
+			},
+		});
+		assert(revokeNoToken);
+
+		const revokeBadToken = await t.step({
+			name: "revoke-bad-token",
+			async fn() {
+				const request = await superoak(app);
+				await request.post("/api/auth/token/revoke").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					token: "badtokenhere",
+				})).expect(Status.NotFound).expect(
+					"Content-Type",
+					"application/json",
+				);
+			},
+		});
+		assert(revokeBadToken);
+
+		const patchName = await t.step({
+			name: "patch-name",
+			async fn() {
+				const request = await superoak(app);
+				await request.patch("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					username: "TestyTest",
+				})).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				const request2 = await superoak(app);
+				const responseMe = await request2.get("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				assertEquals(responseMe.body.username, "TestyTest");
+				const request3 = await superoak(app);
+				const responseMe2 = await request3.patch("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					username,
+				})).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				assertEquals(responseMe2.body.username, username);
+			},
+		});
+		assert(patchName);
+
+		const patchBadBody = await t.step({
+			name: "patch-bad-body",
+			async fn() {
+				const request = await superoak(app);
+				await request.patch("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "multipart/form-data").send(new URLSearchParams({
+					username: "beep",
+				}).toString()).expect(Status.BadRequest);
+			},
+		});
+		assert(patchBadBody);
+
 		const getUserById = await t.step({
 			name: "user-by-id",
 			async fn() {
@@ -128,6 +230,26 @@ Deno.test({
 			},
 		});
 		assert(getUserById);
+
+		const getUsers = await t.step({
+			name: "users",
+			async fn() {
+				const request = await superoak(app);
+
+				const response = await request.get(
+					`/api/users?username=${username}&limit=201`,
+				)
+					.expect(Status.OK)
+					.expect("Content-Type", "application/json");
+
+				const body = response.body as { username: string; id: number }[];
+				const userFromBody = body.find((a) =>
+					a.username === user.username && a.id === user.id
+				);
+				assert(userFromBody);
+			},
+		});
+		assert(getUsers);
 
 		const wrongPassword = await t.step({
 			name: "wrong-password",
@@ -241,6 +363,37 @@ Deno.test({
 				username,
 				password,
 			})).expect(Status.BadRequest).expect("Content-Type", "application/json");
+	},
+});
+
+Deno.test({
+	name: "register-get-not-found",
+	async fn() {
+		const request = await superoak(app);
+		await request.get("/api/auth/register").expect(Status.NotFound).expect(
+			"Content-Type",
+			"application/json",
+		);
+	},
+});
+
+Deno.test({
+	name: "revoke-get-not-found",
+	async fn() {
+		const request = await superoak(app);
+		await request.get("/api/auth/token/revoke").expect(Status.NotFound).expect(
+			"Content-Type",
+			"application/json",
+		);
+	},
+});
+
+Deno.test({
+	name: "revoke-unauthorized",
+	async fn() {
+		const request = await superoak(app);
+		await request.post("/api/auth/token/revoke").expect(Status.Unauthorized)
+			.expect("Content-Type", "application/json");
 	},
 });
 
