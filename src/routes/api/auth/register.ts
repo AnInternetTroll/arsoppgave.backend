@@ -1,4 +1,4 @@
-import { Status } from "../../../deps.ts";
+import { log, Status } from "../../../deps.ts";
 import type { Route } from "../../../middleware/types.d.ts";
 import { User, UserLocal } from "../../../models/mod.ts";
 import { generateSalt, hashPassword } from "../../../utils/auth.ts";
@@ -23,10 +23,17 @@ export default {
 			);
 		}
 
-		await User.create({
-			username: body.username,
-			email: body.email,
-		});
+		try {
+			await User.create({
+				username: body.username,
+				email: body.email,
+			});
+		} catch (err) {
+			// I honestly don't know how to properly catch this error
+			// if (err instanceof SqliteError) {
+			log.debug(err);
+			return ctx.throw(Status.BadRequest, err.message);
+		}
 
 		const user = await User.where("email", "=", body.email).first() as User;
 		const salt = generateSalt();

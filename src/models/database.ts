@@ -1,5 +1,6 @@
 import { Database, log, Relationships, SQLite3Connector } from "../deps.ts";
 import { config } from "../config.ts";
+import { generateSalt, hashPassword } from "../utils/auth.ts";
 import { Token, User, UserDiscord, UserLocal } from "./mod.ts";
 
 let connector;
@@ -30,3 +31,26 @@ try {
 	log.error(err);
 	// it's probably ok
 }
+
+// Add or edit admin user
+
+let admin = await User.find(1) as User;
+if (!admin) {
+	admin = new User();
+}
+
+admin.email = config.adminEmail;
+admin.username = config.adminUsername;
+admin.role = "super";
+admin.id = 1;
+
+let adminLocal = await UserLocal.find(1) as UserLocal;
+if (!adminLocal) adminLocal = new UserLocal();
+const salt = generateSalt();
+adminLocal.salt = salt;
+adminLocal.hash = await hashPassword(config.adminPassword, salt);
+adminLocal.id = 1;
+adminLocal.userId = admin.id;
+
+await admin.save();
+await adminLocal.save();

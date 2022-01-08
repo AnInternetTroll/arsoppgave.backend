@@ -1,6 +1,7 @@
 import { assert, assertEquals, FakeTime, superoak } from "../deps.ts";
 import { Status } from "../../src/deps.ts";
 import { app } from "../../src/mod.ts";
+import { config } from "../../src/config.ts";
 import { email, password, username } from "../config.ts";
 
 Deno.test({
@@ -45,6 +46,23 @@ Deno.test({
 			},
 		});
 		assert(loginBasicSuccess);
+
+		const registerDuplicateUsername = await t.step({
+			name: "register-duplicate-username",
+			async fn() {
+				const request = await superoak(app);
+				await request.post("/api/auth/register").set(
+					"content-type",
+					"application/json",
+				)
+					.send(JSON.stringify({
+						username,
+						password,
+						email,
+					})).expect(Status.BadRequest);
+			},
+		});
+		assert(registerDuplicateUsername);
 
 		const loginBearerSuccess = await t.step({
 			name: "login-bearer",
@@ -111,6 +129,32 @@ Deno.test({
 			},
 		});
 		assert(tokenRevoke);
+
+		const tokenRevokeByAdmin = await t.step({
+			name: "token-revoke-by-admin",
+			async fn() {
+				const time = new FakeTime();
+				try {
+					const request = await superoak(app);
+					const tokenResponse = await request.get("/api/auth/token?exp=500")
+						.set(
+							"authorization",
+							`Basic ${btoa(`${email}:${password}`)}`,
+						).expect(Status.OK).expect("Content-Type", "application/json");
+					const revokeTokenRequest = await superoak(app);
+					await revokeTokenRequest.post("/api/auth/token/revoke").set(
+						"authorization",
+						`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
+					).send({
+						token: tokenResponse.body.token,
+					}).expect(Status.NoContent);
+					time.tick(500);
+				} finally {
+					time.restore();
+				}
+			},
+		});
+		assert(tokenRevokeByAdmin);
 
 		const revokeBadBody = await t.step({
 			name: "revoke-bad-body",
@@ -469,5 +513,16 @@ Deno.test({
 			"Hacker beepboop",
 		)
 			.expect(Status.BadRequest).expect("Content-Type", "application/json");
+	},
+});
+
+Deno.test({
+	name: "patch-super",
+	async fn() {
+		const request = await superoak(app);
+		await request.patch("/api/users/@me").set(
+			"authorization",
+			`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
+		).expect(Status.Forbidden);
 	},
 });

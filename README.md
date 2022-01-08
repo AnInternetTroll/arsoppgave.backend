@@ -19,6 +19,7 @@ SQLITE=database.sqlite
 ADMIN_USERNAME=luca
 ADMIN_PASSWORD=qwer1234
 ADMIN_EMAIL=support@localhost.com
+LOG_LEVEL=NOTSET
 ```
 
 # Production

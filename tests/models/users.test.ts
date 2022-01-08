@@ -1,16 +1,13 @@
 import "../../src/models/database.ts";
-import { User, UserLocal } from "../../src/models/mod.ts";
+import { Token, User, UserLocal } from "../../src/models/mod.ts";
 import { generateSalt, hashPassword } from "../../src/utils/auth.ts";
 import { assertEquals } from "../deps.ts";
+import { email, password, username } from "../config.ts";
 
 Deno.test({
-	name: "orm-new-local-user",
+	name: "orm-new-local-user-and-token",
 	async fn() {
 		// Constants
-		// http://bash.org/?244321
-		const username = "AzureDiamond";
-		const password = "hunter2";
-		const email = "support@localhost.com";
 
 		const salt = generateSalt();
 
@@ -34,10 +31,23 @@ Deno.test({
 		const userLocal = await UserLocal.where("userId", "=", user.id)
 			.first() as UserLocal;
 
+		assertEquals(await UserLocal.where("id", userLocal.id).user(), user);
 		assertEquals(userLocal.hash, await hashPassword(password, userLocal.salt));
+
+		const token = crypto.randomUUID();
+
+		await Token.create({
+			userId: user.id,
+			scope: "read",
+			token,
+			exp: 500,
+		});
+		const tokenObj = await Token.where("userId", user.id).first() as Token;
+		assertEquals(await Token.where("id", tokenObj.id).user(), user);
 
 		// Clean up
 		await user.delete();
 		await userLocal.delete();
+		await tokenObj.delete();
 	},
 });

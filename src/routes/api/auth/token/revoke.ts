@@ -23,7 +23,7 @@ export default {
 
 		if (!token) return ctx.throw(Status.NotFound, "No token found");
 
-		if (token.userId === user.id) await token.delete();
+		if (token.userId === user.id || user.role !== "user") await token.delete();
 		else return ctx.throw(Status.NotFound, "No token found");
 
 		ctx.response.status = Status.NoContent;
