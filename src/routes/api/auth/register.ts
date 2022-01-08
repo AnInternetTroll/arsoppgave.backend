@@ -17,7 +17,7 @@ export default {
 		const body = await bodyOak.value;
 
 		if (!("username" in body && "password" in body && "email" in body)) {
-			return ctx.throw(
+			ctx.throw(
 				Status.BadRequest,
 				"Username, email, or password not provided",
 			);

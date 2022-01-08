@@ -8,13 +8,13 @@ router.use(async (ctx, next) => {
 		await next();
 	} catch (err) {
 		if (isHttpError(err)) {
-			ctx.response.status = Status.Unauthorized;
 			switch (err.status) {
 				case Status.Unauthorized: {
 					// Handle here ish stuff
 					break;
 				}
 			}
+			ctx.response.status = err.status;
 			ctx.response.headers.set("content-type", "application/json");
 			ctx.response.body = JSON.stringify({
 				message: err.message,
@@ -109,11 +109,12 @@ async function readDir(dir: URL, router: Router): Promise<void> {
 					/\[(.*?)\]/g,
 					":$1",
 				).replace(/(\.ts)|(\.js)|(\/index(\.ts|\.js))/, "");
-			log.debug(urlPath, method);
-			// @ts-ignore why
+
+			log.debug(`${urlPath} ${method}`);
+
 			router[method.toLowerCase() as "get" | "post" | "patch" | "delete"](
 				urlPath,
-				// @ts-ignore same thing
+				// @ts-ignore Dynamic types are wack, so just trust me on this
 				routes[method],
 			);
 		}

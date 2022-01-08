@@ -3,7 +3,8 @@ DENO=deno
 
 # These are the variables the server uses
 # They should be also put in a `.env` file
-ENV_VARS=PORT,SQLITE,ADMIN_USERNAME,ADMIN_PASSWORD,ADMIN_EMAIL
+ENV_VARS=PORT,SQLITE,ADMIN_USERNAME,ADMIN_PASSWORD,ADMIN_EMAIL,LOG_LEVEL
+WRITE_FILES=database.sqlite,database.sqlite-journal,server.log
 
 # This configuration file is used for `fmt` and `lint`
 # But if needed it can be used for `compilerOptions` as well to customise typescript
@@ -13,7 +14,7 @@ CONFIG=deno.jsonc
 # These flags will be used for `run` and `test` and `compile` and what not
 DENO_FLAGS=\
 	--allow-read=. \
-	--allow-write=database.sqlite,database.sqlite-journal \
+	--allow-write=$(WRITE_FILES) \
 	--allow-env=$(ENV_VARS) \
 	--allow-net \
 	--config=$(CONFIG) \
@@ -29,7 +30,7 @@ dev:
 
 test:
 	rm -rf cov
-	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS) --coverage=cov
+	RUST_BACKTRACE=full LOG_LEVEL=CRITICAL $(DENO) test $(DENO_FLAGS) --coverage=cov
 
 coverage: 
 	$(DENO) coverage cov --lcov > lcov.info

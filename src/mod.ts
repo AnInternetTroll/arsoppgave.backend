@@ -25,10 +25,6 @@ app.addEventListener("error", (evt) => log.error(evt.error));
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-export function startServer(port = config.port, signal = controller.signal) {
-	return app.listen({ port, signal });
-}
-
 if (import.meta.main) {
-	startServer();
+	app.listen({ port: config.port, signal: controller.signal });
 }

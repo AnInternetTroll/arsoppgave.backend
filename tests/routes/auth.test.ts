@@ -196,7 +196,7 @@ Deno.test({
 			"authorization",
 			"Bearer helloworld",
 		)
-			.expect(Status.Unauthorized).expect("Content-Type", "application/json");
+			.expect(Status.Forbidden).expect("Content-Type", "application/json");
 	},
 });
 
@@ -258,6 +258,6 @@ Deno.test({
 			"authorization",
 			"Hacker beepboop",
 		)
-			.expect(Status.Unauthorized).expect("Content-Type", "application/json");
+			.expect(Status.BadRequest).expect("Content-Type", "application/json");
 	},
 });

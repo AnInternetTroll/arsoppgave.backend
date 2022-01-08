@@ -1,6 +1,4 @@
-// Handles `.env` file.
-// Technically can be ignored as you can always set env variables yourself.
-import "https://deno.land/x/dotenv@v3.1.0/load.ts";
+import { config } from "./config.ts";
 
 // The ORM library. The way to save all kinds of data
 export {
@@ -37,8 +35,30 @@ export {
 	normalize,
 	relative,
 } from "https://deno.land/std@0.119.0/path/mod.ts";
-export * as log from "https://deno.land/std@0.119.0/log/mod.ts";
+import * as log from "https://deno.land/std@0.119.0/log/mod.ts";
 export {
 	Session,
 	SqliteStore,
 } from "https://deno.land/x/oak_sessions@v3.2.3/mod.ts";
+
+await log.setup({
+	handlers: {
+		console: new log.handlers.ConsoleHandler(config.logLevel),
+
+		file: new log.handlers.FileHandler(config.logLevel, {
+			filename: "./server.log",
+			formatter: "{levelName} {msg}",
+		}),
+
+	},
+
+	loggers: {
+		// configure default logger available via short-hand methods above.
+		default: {
+			level: config.logLevel,
+			handlers: ["console", "file"],
+		},
+	},
+});
+
+export { log };
