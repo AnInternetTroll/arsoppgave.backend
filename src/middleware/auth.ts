@@ -1,4 +1,4 @@
-import type { Context } from "../deps.ts";
+import { Context, log } from "../deps.ts";
 import { Status } from "../deps.ts";
 import { Token } from "../models/mod.ts";
 import { User } from "../models/user.ts";
@@ -22,7 +22,7 @@ export const restrict: (ctx: Context) => Promise<false | User> = async (
 	ctx,
 ) => {
 	const header = ctx.request.headers.get("authorization");
-
+	log.debug(header)
 	if (!header) {
 		ctx.throw(Status.Unauthorized, "No Authorization header provided");
 		return false;
@@ -112,5 +112,6 @@ export const restrict: (ctx: Context) => Promise<false | User> = async (
 			return false;
 		}
 	}
+	log.debug(user)
 	return user;
 };

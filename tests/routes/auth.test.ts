@@ -2,7 +2,14 @@ import { assert, assertEquals, FakeTime, superoak } from "../deps.ts";
 import { Status } from "../../src/deps.ts";
 import { app } from "../../src/mod.ts";
 import { config } from "../../src/config.ts";
-import { email, password, username } from "../config.ts";
+import {
+	email,
+	email2,
+	password,
+	password2,
+	username,
+	username2,
+} from "../config.ts";
 
 Deno.test({
 	name: "http-local-user",
@@ -11,6 +18,11 @@ Deno.test({
 			username: string;
 			id: number;
 		};
+		let user2: {
+			username: string;
+			id: number;
+		};
+
 		const registerSuccess = await t.step({
 			name: "register",
 			async fn() {
@@ -28,6 +40,23 @@ Deno.test({
 		});
 		assert(registerSuccess);
 
+		const registerSuccess2 = await t.step({
+			name: "register2",
+			async fn() {
+				const request = await superoak(app);
+				await request.post("/api/auth/register").set(
+					"content-type",
+					"application/json",
+				)
+					.send(JSON.stringify({
+						username: username2,
+						password: password2,
+						email: email2,
+					})).expect(Status.NoContent);
+			},
+		});
+		assert(registerSuccess2);
+
 		const loginBasicSuccess = await t.step({
 			name: "login-basic",
 			async fn() {
@@ -36,7 +65,7 @@ Deno.test({
 					const request = await superoak(app);
 					await request.get("/api/auth/token").set(
 						"authorization",
-						`Basic ${btoa(`${email}:${password}`)}`,
+						`Basic ${btoa(`${email2}:${password2}`)}`,
 					).expect(Status.OK).expect("Content-Type", "application/json");
 
 					time.tick(120 * 60 * 1000); // 120min
@@ -103,6 +132,21 @@ Deno.test({
 			},
 		});
 		assert(loginBearerSuccess);
+
+		const getUser2 = await t.step({
+			name: "get-user-2",
+			async fn() {
+				const request = await superoak(app);
+				const response = await request.get("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email2}:${password2}`)}`,
+				).expect(Status.OK).expect("Content-Type", "application/json");
+				user2 = response.body;
+
+				assertEquals(user2.username, username2);
+			},
+		});
+		assert(getUser2);
 
 		const tokenRevoke = await t.step({
 			name: "token-revoke",
@@ -207,6 +251,32 @@ Deno.test({
 		});
 		assert(revokeBadToken);
 
+		const tokenRevokeForbidden = await t.step({
+			name: "token-revoke-forbidden",
+			async fn() {
+				const time = new FakeTime();
+				try {
+					const request = await superoak(app);
+					const tokenResponse = await request.get("/api/auth/token?exp=500")
+						.set(
+							"authorization",
+							`Basic ${btoa(`${email}:${password}`)}`,
+						).expect(Status.OK).expect("Content-Type", "application/json");
+					const revokeTokenRequest = await superoak(app);
+					await revokeTokenRequest.post("/api/auth/token/revoke").set(
+						"authorization",
+						`Basic ${btoa(`${email2}:${password2}`)}`,
+					).send({
+						token: tokenResponse.body.token,
+					}).expect(Status.NotFound);
+					time.tick(500);
+				} finally {
+					time.restore();
+				}
+			},
+		});
+		assert(tokenRevokeForbidden);
+
 		const patchName = await t.step({
 			name: "patch-name",
 			async fn() {
@@ -243,6 +313,29 @@ Deno.test({
 			},
 		});
 		assert(patchName);
+
+		const patchNameDuplicate = await t.step({
+			name: "patch-name-duplicate",
+			async fn() {
+				const request = await superoak(app);
+				await request.patch("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email2}:${password2}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					username,
+				})).expect(Status.BadRequest);
+				const request2 = await superoak(app);
+				const responseMe = await request2.get("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email2}:${password2}`)}`,
+				).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				assertEquals(responseMe.body.username, username2);
+			},
+		});
+		assert(patchNameDuplicate);
 
 		const patchBadBody = await t.step({
 			name: "patch-bad-body",
@@ -336,6 +429,18 @@ Deno.test({
 				await request.delete("/api/users/@me").set(
 					"authorization",
 					`Basic ${btoa(`${email}:${password}`)}`,
+				).expect(Status.NoContent);
+			},
+		});
+		assert(deleteSuccess);
+
+		const deleteSuccess2 = await t.step({
+			name: "delete-2",
+			async fn() {
+				const request = await superoak(app);
+				await request.delete("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email2}:${password2}`)}`,
 				).expect(Status.NoContent);
 			},
 		});

@@ -5,6 +5,7 @@ export const router = new Router();
 
 router.use(async (ctx, next) => {
 	try {
+		//log.debug(`${ctx.request.method} ${ctx.request.url} ${[...ctx.request.headers.entries()]}`);
 		await next();
 	} catch (err) {
 		if (isHttpError(err)) {
@@ -14,12 +15,18 @@ router.use(async (ctx, next) => {
 					break;
 				}
 			}
-			ctx.response.status = err.status;
+			log.debug(err);
+			ctx.response.status = err.status || Status.InternalServerError;
 			ctx.response.headers.set("content-type", "application/json");
 			ctx.response.body = JSON.stringify({
 				message: err.message,
 				stack: err.stack,
 			});
+		} else {
+			log.debug(err);
+			ctx.response.status = Status.InternalServerError;
+			ctx.response.headers.set("Content-Type", "application/json");
+			ctx.response.body = JSON.stringify(err);
 		}
 	}
 });
@@ -27,8 +34,8 @@ router.use(async (ctx, next) => {
 // How else should I check for route if idk what route is
 // deno-lint-ignore no-explicit-any
 function isRoute(route: any): route is Route {
+	const keys = Object.keys(route);
 	if ("GET" in route) {
-		const keys = Object.keys(route);
 		if (
 			keys.filter((a) =>
 				a === "GET" || a === "POST" || a === "PATCH" || a === "DELETE"
@@ -37,6 +44,7 @@ function isRoute(route: any): route is Route {
 			return true;
 		}
 	}
+	log.debug(keys);
 	return false;
 }
 

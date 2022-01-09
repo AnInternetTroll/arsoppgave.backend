@@ -30,7 +30,7 @@ dev:
 
 test:
 	rm -rf cov
-	RUST_BACKTRACE=full LOG_LEVEL=CRITICAL $(DENO) test $(DENO_FLAGS) --coverage=cov
+	RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS) --coverage=cov
 
 coverage: 
 	$(DENO) coverage cov --lcov > lcov.info
