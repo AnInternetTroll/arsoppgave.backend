@@ -2,7 +2,14 @@ import { assert, assertEquals, FakeTime, superoak } from "../deps.ts";
 import { Status } from "../../src/deps.ts";
 import { app } from "../../src/mod.ts";
 import { config } from "../../src/config.ts";
-import { email, password, username } from "../config.ts";
+import {
+	email,
+	email2,
+	password,
+	password2,
+	username,
+	username2,
+} from "../config.ts";
 
 Deno.test({
 	name: "http-local-user",
@@ -23,6 +30,17 @@ Deno.test({
 						username,
 						password,
 						email,
+					})).expect(Status.NoContent);
+
+				const request2 = await superoak(app);
+				await request2.post("/api/auth/register").set(
+					"content-type",
+					"application/json",
+				)
+					.send(JSON.stringify({
+						username: username2,
+						password: password2,
+						email: email2,
 					})).expect(Status.NoContent);
 			},
 		});
@@ -244,6 +262,32 @@ Deno.test({
 		});
 		assert(patchName);
 
+		const patchDuplicateName = await t.step({
+			name: "patch-duplicate-name",
+			async fn() {
+				const request = await superoak(app);
+				await request.patch("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email2}:${password2}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					username,
+				})).expect(Status.BadRequest).expect(
+					"Content-Type",
+					"application/json",
+				);
+				const request2 = await superoak(app);
+				const responseMe = await request2.get("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email2}:${password2}`)}`,
+				).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				assertEquals(responseMe.body.username, username2);
+			},
+		});
+		assert(patchDuplicateName);
+
 		const patchBadBody = await t.step({
 			name: "patch-bad-body",
 			async fn() {
@@ -336,6 +380,12 @@ Deno.test({
 				await request.delete("/api/users/@me").set(
 					"authorization",
 					`Basic ${btoa(`${email}:${password}`)}`,
+				).expect(Status.NoContent);
+
+				const request2 = await superoak(app);
+				await request2.delete("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email2}:${password2}`)}`,
 				).expect(Status.NoContent);
 			},
 		});

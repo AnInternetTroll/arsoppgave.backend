@@ -1,7 +1,7 @@
 import type { Route } from "../../../middleware/types.d.ts";
 import { restrict } from "../../../middleware/auth.ts";
-import { Status } from "../../../deps.ts";
-import { Token, UserLocal } from "../../../models/mod.ts";
+import { log, Status } from "../../../deps.ts";
+import { Token, type User, UserLocal } from "../../../models/mod.ts";
 
 export default {
 	async GET(ctx, next) {
@@ -45,8 +45,13 @@ export default {
 		const body = await bodyObj.value;
 
 		user.username = body.username;
-
-		const newUser = await user.update();
+		let newUser: User;
+		try {
+			newUser = await user.update();
+		} catch (err) {
+			log.debug(err);
+			return ctx.throw(Status.BadRequest, err);
+		}
 
 		ctx.response.headers.set("content-type", "application/json");
 		ctx.response.body = JSON.stringify(newUser);
