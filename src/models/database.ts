@@ -1,7 +1,7 @@
 import { Database, log, Relationships, SQLite3Connector } from "../deps.ts";
 import { config } from "../config.ts";
 import { generateSalt, hashPassword } from "../utils/auth.ts";
-import { Token, User, UserDiscord, UserLocal } from "./mod.ts";
+import { Log, Token, User, UserDiscord, UserLocal } from "./mod.ts";
 
 let connector;
 
@@ -18,6 +18,7 @@ export const db = new Database(connector);
 Relationships.belongsTo(UserLocal, User);
 Relationships.belongsTo(UserDiscord, User);
 Relationships.belongsTo(Token, User);
+Relationships.belongsTo(Log, User);
 
 try {
 	db.link([
@@ -25,6 +26,7 @@ try {
 		UserLocal,
 		UserDiscord,
 		Token,
+		Log,
 	]);
 	await db.sync({ drop: true });
 } catch (err) {

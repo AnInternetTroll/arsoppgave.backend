@@ -1,5 +1,6 @@
 # Change if you want another deno executable
 DENO=deno
+DIA=dia
 
 # These are the variables the server uses
 # They should be also put in a `.env` file
@@ -30,11 +31,15 @@ dev:
 
 test:
 	rm -rf cov
-	RUST_BACKTRACE=full LOG_LEVEL=CRITICAL $(DENO) test $(DENO_FLAGS) --coverage=cov
+	RUST_BACKTRACE=full LOG_LEVEL=DEBUG $(DENO) test $(DENO_FLAGS) --coverage=cov
 
 coverage: 
 	$(DENO) coverage cov --lcov > lcov.info
 	genhtml -o cov/html lcov.info
+
+diagram:
+	$(DIA) -e diagrams/routes.png -t png diagrams/routes.dia
+	$(DIA) -e diagrams/schema.png -t png diagrams/schema.dia
 
 fmt:
 	$(DENO) fmt --config=$(CONFIG) --ignore=cov 

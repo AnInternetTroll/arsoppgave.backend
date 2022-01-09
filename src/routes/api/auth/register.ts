@@ -1,6 +1,6 @@
 import { log, Status } from "../../../deps.ts";
 import type { Route } from "../../../middleware/types.d.ts";
-import { User, UserLocal } from "../../../models/mod.ts";
+import { Log, User, UserLocal } from "../../../models/mod.ts";
 import { generateSalt, hashPassword } from "../../../utils/auth.ts";
 
 export default {
@@ -42,6 +42,11 @@ export default {
 			salt,
 			hash: await hashPassword(body.password, salt),
 			userId: user.id,
+		});
+
+		await Log.create({
+			userId: user.id,
+			action: "ADD",
 		});
 
 		ctx.response.status = Status.NoContent;

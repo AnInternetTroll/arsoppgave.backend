@@ -1,7 +1,7 @@
 import type { Route } from "../../../middleware/types.d.ts";
 import { restrict } from "../../../middleware/auth.ts";
 import { log, Status } from "../../../deps.ts";
-import { Token, type User, UserLocal } from "../../../models/mod.ts";
+import { Log, Token, type User, UserLocal } from "../../../models/mod.ts";
 
 export default {
 	async GET(ctx, next) {
@@ -22,6 +22,16 @@ export default {
 		await UserLocal.where("userId", "=", user.id).delete();
 		await Token.where("userId", "=", user.id).delete();
 		await user.delete();
+
+		// How do you save a log of someone who is deleted?
+		try {
+			await Log.create({
+				userId: user.id,
+				action: "DELETE",
+			});
+		} catch (err) {
+			log.debug(err);
+		}
 
 		ctx.response.status = Status.NoContent;
 	},
