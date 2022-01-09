@@ -14,12 +14,16 @@ router.use(async (ctx, next) => {
 					break;
 				}
 			}
-			ctx.response.status = err.status;
+			ctx.response.status = err.status || Status.InternalServerError;
 			ctx.response.headers.set("content-type", "application/json");
 			ctx.response.body = JSON.stringify({
 				message: err.message,
 				stack: err.stack,
 			});
+		} else {
+			ctx.response.status = Status.InternalServerError;
+			ctx.response.headers.set("content-type", "application/json");
+			ctx.response.body = JSON.stringify(err);
 		}
 	}
 });
