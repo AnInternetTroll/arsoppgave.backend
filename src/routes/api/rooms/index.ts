@@ -1,7 +1,7 @@
 import { helpers } from "../../../deps.ts";
 import { restrict } from "../../../middleware/auth.ts";
 import type { Route } from "../../../middleware/types.d.ts";
-import { Room, Member } from "../../../models/mod.ts";
+import { Member, Room } from "../../../models/mod.ts";
 
 export default {
 	/**
