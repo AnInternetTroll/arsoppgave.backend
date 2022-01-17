@@ -6,6 +6,8 @@ export class Member extends Model {
 	static timestamps = true;
 
 	id!: number;
+	userId!: number;
+	roomId!: number;
 
 	static fields = {
 		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },
