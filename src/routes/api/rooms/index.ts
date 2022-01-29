@@ -4,10 +4,6 @@ import { Member, Room } from "../../../models/mod.ts";
 
 export default {
 	/**
-	 * Query params:
-	 * limit: How many elements it can return. Max 200
-	 * offset: Offset to get more users other than the first 200
-	 * username: A username to find users
 	 * @param ctx Oak context
 	 */
 	async GET(ctx, next) {
@@ -19,10 +15,28 @@ export default {
 			| Member;
 
 		const roomsTasks: Promise<Room>[] = Array.isArray(members)
-			? members.map((a) => Room.find(a.roomId) as Promise<Room>)
+			? members.map((member) => Room.find(member.roomId) as Promise<Room>)
 			: [Room.find(members.roomId) as Promise<Room>];
 
 		ctx.response.headers.set("content-type", "application/json");
 		ctx.response.body = JSON.stringify(await Promise.all(roomsTasks));
 	},
+	async POST(ctx, next) {
+		const user = await restrict(ctx);
+		if (!user) return await next();
+
+		await Room.create({
+			ownerId: user.id,
+		});
+
+		const room = await Room.where("ownerId", "=", user.id).first() as Room;
+
+		await Member.create({
+			userId: user.id,
+			roomId: room.id,
+		});
+
+		ctx.response.headers.set("content-type", "application/json");
+		ctx.response.body = JSON.stringify(room);
+	}
 } as Route;
