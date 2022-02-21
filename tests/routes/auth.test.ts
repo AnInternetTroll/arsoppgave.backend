@@ -335,6 +335,8 @@ Deno.test({
 					a.username === user.username && a.id === user.id
 				);
 				assert(userFromBody);
+				// @ts-ignore Ideally there really wouldn't be any email
+				assert(userFromBody.email === undefined);
 			},
 		});
 		assert(getUsers);

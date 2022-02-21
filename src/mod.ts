@@ -23,6 +23,13 @@ app.addEventListener("listen", ({ hostname, port, secure }) => {
 app.addEventListener("error", (evt) => log.error(evt.error));
 
 app.use(router.routes());
+app.use((ctx, next) => {
+	ctx.response.headers.set("Access-Control-Allow-Credentials", "*");
+	ctx.response.headers.set("Access-Control-Allow-Headers", "*");
+	ctx.response.headers.set("Access-Control-Allow-Methods", "*");
+	ctx.response.headers.set("Access-Control-Allow-Origin", "*");
+	next()
+})
 app.use(router.allowedMethods());
 
 if (import.meta.main) {
