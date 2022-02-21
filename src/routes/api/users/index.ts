@@ -28,7 +28,10 @@ export default {
 		const users = await query.get();
 		// Make the query into a list
 		// And remove the email as it is sensitive data
-		const usersList = (Array.isArray(users) ? users : [users]).map(user => ({...user, email: undefined }))
+		const usersList = (Array.isArray(users) ? users : [users]).map((user) => ({
+			...user,
+			email: undefined,
+		}));
 
 		ctx.response.headers.set("content-type", "application/json");
 		ctx.response.body = JSON.stringify(usersList);

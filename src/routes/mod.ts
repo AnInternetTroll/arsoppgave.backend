@@ -131,4 +131,3 @@ async function readDir(dir: URL, router: Router): Promise<void> {
 }
 
 await readDir(new URL("./api/", import.meta.url), router);
-

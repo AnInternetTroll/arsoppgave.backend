@@ -28,8 +28,8 @@ app.use((ctx, next) => {
 	ctx.response.headers.set("Access-Control-Allow-Headers", "*");
 	ctx.response.headers.set("Access-Control-Allow-Methods", "*");
 	ctx.response.headers.set("Access-Control-Allow-Origin", "*");
-	next()
-})
+	next();
+});
 app.use(router.allowedMethods());
 
 if (import.meta.main) {
