@@ -18,5 +18,5 @@ export class Room extends Model {
 
 	static defaults = {
 		read: true,
-	}
+	};
 }

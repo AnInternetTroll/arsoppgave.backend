@@ -127,3 +127,11 @@ async function readDir(dir: URL, router: Router): Promise<void> {
 }
 
 await readDir(new URL("./api/", import.meta.url), router);
+
+router.use((ctx, next) => {
+	ctx.response.headers.set(
+		"Access-Control-Allow-Origin",
+		"http://localhost:3000",
+	);
+	next();
+});

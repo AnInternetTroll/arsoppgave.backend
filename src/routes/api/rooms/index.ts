@@ -38,5 +38,5 @@ export default {
 
 		ctx.response.headers.set("content-type", "application/json");
 		ctx.response.body = JSON.stringify(room);
-	}
+	},
 } as Route;
