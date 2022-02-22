@@ -1,6 +1,7 @@
 # Change if you want another deno executable
 DENO=deno
 DIA=dia
+CONTAINER_ENGINE=$(shell which podman 2> /dev/null || which docker)
 
 # These are the variables the server uses
 # They should be also put in a `.env` file
@@ -24,16 +25,20 @@ DENO_FLAGS=\
 
 # If this crashes in prod I better have some good stack trace of it
 run:
-	RUST_BACKTRACE=full $(DENO) run $(DENO_FLAGS) src/mod.ts
+	RUST_BACKTRACE=full $(DENO) run $(DENO_FLAGS) main.ts
 
 dev:
-	RUST_BACKTRACE=full $(DENO) run --watch $(DENO_FLAGS) src/mod.ts
+	RUST_BACKTRACE=full $(DENO) run --watch $(DENO_FLAGS) main.ts
 
 test:
 	rm -rf cov
 	RUST_BACKTRACE=full LOG_LEVEL=DEBUG $(DENO) test $(DENO_FLAGS) --coverage=cov
 
-coverage: 
+container:
+	$(CONTAINER_ENGINE) build -t app .
+	$(CONTAINER_ENGINE) run -it -p 8080:8080 app
+
+coverage:
 	$(DENO) coverage cov --lcov > lcov.info
 	genhtml -o cov/html lcov.info
 
@@ -42,7 +47,7 @@ diagram:
 	$(DIA) -e diagrams/schema.png -t png diagrams/schema.dia
 
 fmt:
-	$(DENO) fmt --config=$(CONFIG) --ignore=cov 
+	$(DENO) fmt --config=$(CONFIG) --ignore=cov
 
 lint:
 	$(DENO) lint --config=$(CONFIG)

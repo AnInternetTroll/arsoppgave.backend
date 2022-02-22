@@ -1,4 +1,4 @@
-import { encodeBase64, encodeHex } from "../deps.ts";
+import { encodeBase64, encodeHex } from "../../deps.ts";
 
 export async function hashPassword(
 	password: string,

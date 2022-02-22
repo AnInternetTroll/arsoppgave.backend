@@ -1,4 +1,4 @@
-import { Status } from "../../../../deps.ts";
+import { Status } from "../../../../../deps.ts";
 import { restrict } from "../../../../middleware/auth.ts";
 import type { Route } from "../../../../middleware/types.d.ts";
 import { Token } from "../../../../models/mod.ts";

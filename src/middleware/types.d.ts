@@ -1,4 +1,4 @@
-import type { Middleware } from "../deps.ts";
+import type { Middleware } from "../../deps.ts";
 
 export interface Route {
 	GET: Middleware;

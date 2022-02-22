@@ -1,4 +1,4 @@
-import { helpers } from "../../../deps.ts";
+import { helpers } from "../../../../deps.ts";
 import type { Route } from "../../../middleware/types.d.ts";
 import { User } from "../../../models/mod.ts";
 

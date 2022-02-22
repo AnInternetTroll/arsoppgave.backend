@@ -1,4 +1,4 @@
-import { DataTypes, Model } from "../deps.ts";
+import { DataTypes, Model } from "../../deps.ts";
 import { User } from "./user.ts";
 
 export class UserDiscord extends Model {

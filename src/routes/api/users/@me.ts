@@ -1,7 +1,8 @@
 import type { Route } from "../../../middleware/types.d.ts";
 import { restrict } from "../../../middleware/auth.ts";
-import { log, Status } from "../../../deps.ts";
+import { Status } from "../../../../deps.ts";
 import { Log, Token, type User, UserLocal } from "../../../models/mod.ts";
+import { log } from "../../../log.ts";
 
 export default {
 	async GET(ctx, next) {
