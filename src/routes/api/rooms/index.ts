@@ -1,4 +1,4 @@
-import { restrict } from "../../../middleware/auth.ts";
+import { authenticate } from "../../../middleware/auth.ts";
 import type { Route } from "../../../middleware/types.d.ts";
 import { Member, Room } from "../../../models/mod.ts";
 
@@ -7,7 +7,7 @@ export default {
 	 * @param ctx Oak context
 	 */
 	async GET(ctx, next) {
-		const user = await restrict(ctx);
+		const user = await authenticate(ctx);
 		if (!user) return await next();
 
 		const members = await Member.where("userId", "=", user.id).get() as
@@ -22,7 +22,7 @@ export default {
 		ctx.response.body = JSON.stringify(await Promise.all(roomsTasks));
 	},
 	async POST(ctx, next) {
-		const user = await restrict(ctx);
+		const user = await authenticate(ctx);
 		if (!user) return await next();
 
 		await Room.create({

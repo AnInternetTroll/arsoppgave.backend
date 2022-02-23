@@ -1,11 +1,11 @@
 import { helpers, Status } from "../../../../../deps.ts";
 import type { Route } from "../../../../middleware/types.d.ts";
 import { Token } from "../../../../models/mod.ts";
-import { restrict } from "../../../../middleware/auth.ts";
+import { authenticate } from "../../../../middleware/auth.ts";
 
 export default {
 	async GET(ctx, next) {
-		const user = await restrict(ctx);
+		const user = await authenticate(ctx);
 		if (!user) return await next();
 
 		// This will hold at least the expiration time from now

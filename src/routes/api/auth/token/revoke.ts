@@ -1,5 +1,5 @@
 import { Status } from "../../../../../deps.ts";
-import { restrict } from "../../../../middleware/auth.ts";
+import { authenticate } from "../../../../middleware/auth.ts";
 import type { Route } from "../../../../middleware/types.d.ts";
 import { Token } from "../../../../models/mod.ts";
 
@@ -8,7 +8,7 @@ export default {
 		ctx.throw(Status.NotFound);
 	},
 	async POST(ctx, next) {
-		const user = await restrict(ctx);
+		const user = await authenticate(ctx);
 		if (!user) return await next();
 
 		const bodyObj = ctx.request.body();

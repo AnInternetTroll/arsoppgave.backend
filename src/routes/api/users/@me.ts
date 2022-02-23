@@ -1,12 +1,12 @@
 import type { Route } from "../../../middleware/types.d.ts";
-import { restrict } from "../../../middleware/auth.ts";
+import { authenticate } from "../../../middleware/auth.ts";
 import { Status } from "../../../../deps.ts";
 import { Log, Token, type User, UserLocal } from "../../../models/mod.ts";
 import { log } from "../../../log.ts";
 
 export default {
 	async GET(ctx, next) {
-		const user = await restrict(ctx);
+		const user = await authenticate(ctx);
 		if (!user) return await next();
 
 		ctx.response.headers.set("content-type", "application/json");
@@ -16,7 +16,7 @@ export default {
 		ctx.response.body = JSON.stringify(user);
 	},
 	async DELETE(ctx, next) {
-		const user = await restrict(ctx);
+		const user = await authenticate(ctx);
 		if (!user) return await next();
 
 		// Delete all info we have on the user
@@ -37,7 +37,7 @@ export default {
 		ctx.response.status = Status.NoContent;
 	},
 	async PATCH(ctx, next) {
-		const user = await restrict(ctx);
+		const user = await authenticate(ctx);
 		if (!user) return await next();
 
 		if (user.role === "super") {
