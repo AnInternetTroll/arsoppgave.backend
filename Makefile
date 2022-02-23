@@ -38,6 +38,9 @@ container-build:
 	$(CONTAINER_ENGINE) build -t arsoppgave.backend .
 
 container-run:
+	$(CONTAINER_ENGINE) run -dt -p 8080:8080 arsoppgave.backend
+
+container-dev:
 	$(CONTAINER_ENGINE) run -it -p 8080:8080 arsoppgave.backend
 
 coverage:
