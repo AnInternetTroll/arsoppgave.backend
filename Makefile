@@ -34,7 +34,7 @@ test:
 	rm -rf cov
 	RUST_BACKTRACE=full LOG_LEVEL=DEBUG $(DENO) test $(DENO_FLAGS) --coverage=cov
 
-container-make:
+container-build:
 	$(CONTAINER_ENGINE) build -t arsoppgave.backend .
 
 container-run:
