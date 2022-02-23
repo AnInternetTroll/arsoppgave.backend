@@ -10,14 +10,12 @@ import {
 	username,
 	username2,
 } from "../config.ts";
+import type { User } from "../../src/models/mod.ts";
 
 Deno.test({
 	name: "http-local-user",
 	async fn(t) {
-		let user: {
-			username: string;
-			id: number;
-		};
+		let user: User;
 		const registerSuccess = await t.step({
 			name: "register",
 			async fn() {
@@ -101,10 +99,8 @@ Deno.test({
 
 					user = userMeResponse.body;
 
+					assertEquals(user.email, email);
 					assertEquals(user.username, username);
-					// @ts-ignore yes typescript, the whole point is to check it doesn't exist
-					// what a diva
-					assertEquals(user.email, undefined);
 					assert("id" in user);
 					assert(typeof user.id === "number");
 
@@ -311,13 +307,35 @@ Deno.test({
 					.expect(Status.OK)
 					.expect("Content-Type", "application/json");
 
-				const { body } = response;
+				const body: User = response.body;
 
 				assert(body.username === username);
 				assert(body.id === user.id);
+				assert(body.email === undefined);
 			},
 		});
 		assert(getUserById);
+
+		const getUserByIdAuthenticated = await t.step({
+			name: "user-by-id",
+			async fn() {
+				const request = await superoak(app);
+
+				const response = await request.get(`/api/users/${user.id}`).set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				)
+					.expect(Status.OK)
+					.expect("Content-Type", "application/json");
+
+				const body: User = response.body;
+
+				assert(body.username === username);
+				assert(body.id === user.id);
+				assert(body.email === email);
+			},
+		});
+		assert(getUserByIdAuthenticated);
 
 		const getUsers = await t.step({
 			name: "users",
@@ -576,5 +594,30 @@ Deno.test({
 			"authorization",
 			`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
 		).expect(Status.Forbidden);
+	},
+});
+
+Deno.test({
+	name: "users-super",
+	async fn() {
+		const request = await superoak(app);
+		const response = await request.get("/api/users").set(
+			"authorization",
+			`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
+		).expect(Status.OK);
+		(response.body as User[]).forEach((user) => assert(user.email));
+	},
+});
+
+Deno.test({
+	name: "user-by-id-super",
+	async fn() {
+		const request = await superoak(app);
+		// Might as well hard code user `1` here since it's probably the admin
+		const response = await request.get("/api/users/1").set(
+			"authorization",
+			`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
+		).expect(Status.OK);
+		assert((response.body as User).email);
 	},
 });

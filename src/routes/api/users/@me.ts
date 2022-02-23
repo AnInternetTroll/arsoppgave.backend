@@ -11,8 +11,6 @@ export default {
 
 		ctx.response.headers.set("content-type", "application/json");
 
-		// @ts-ignore Deleting this since it's private information
-		delete user.email;
 		ctx.response.body = JSON.stringify(user);
 	},
 	async DELETE(ctx, next) {

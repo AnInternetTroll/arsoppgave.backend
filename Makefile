@@ -57,4 +57,7 @@ fmt:
 lint:
 	$(DENO) lint --config=$(CONFIG)
 
+check: test lint
+	$(DENO) fmt --config=$(CONFIG) --ignore=cov --check
+
 prep: fmt lint test coverage

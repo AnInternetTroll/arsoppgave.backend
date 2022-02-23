@@ -17,14 +17,19 @@ import { hashPassword } from "../utils/auth.ts";
  *
  * If `Bearer` is used then we check for a token like the one provided
  */
-export const authenticate: (ctx: Context, restrict?: boolean) => Promise<false | User> = async (
+export const authenticate: (
+	ctx: Context,
+	restrict?: boolean,
+) => Promise<false | User> = async (
 	ctx,
 	restrict = true,
 ) => {
 	const header = ctx.request.headers.get("authorization");
 
 	if (!header) {
-		if (restrict) ctx.throw(Status.Unauthorized, "No Authorization header provided");
+		if (restrict) {
+			ctx.throw(Status.Unauthorized, "No Authorization header provided");
+		}
 		return false;
 	}
 

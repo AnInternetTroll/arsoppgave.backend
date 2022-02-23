@@ -1,4 +1,5 @@
 import { helpers } from "../../../../deps.ts";
+import { authenticate } from "../../../middleware/auth.ts";
 import type { Route } from "../../../middleware/types.d.ts";
 import { User } from "../../../models/mod.ts";
 
@@ -11,6 +12,7 @@ export default {
 	 * @param ctx Oak context
 	 */
 	async GET(ctx) {
+		const user = await authenticate(ctx, false);
 		const params = helpers.getQuery(ctx, { mergeParams: true });
 
 		let query = User;
@@ -25,12 +27,16 @@ export default {
 			query = query.where("username", "like", params.username);
 		}
 
-		const users = await query.get();
+		const users = await query.get() as User[] | User;
 		// Make the query into a list
 		// And remove the email as it is sensitive data
-		const usersList = (Array.isArray(users) ? users : [users]).map((user) => ({
-			...user,
-			email: undefined,
+		const usersList = (Array.isArray(users) ? users : [users]).map((
+			userFromList,
+		) => ({
+			...userFromList,
+			email: user && (user.role === "admin" || user.role === "super")
+				? userFromList.email
+				: undefined,
 		}));
 
 		ctx.response.headers.set("content-type", "application/json");
