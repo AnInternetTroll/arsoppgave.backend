@@ -1,5 +1,6 @@
-import { Database, log, Relationships, SQLite3Connector } from "../deps.ts";
+import { Database, Relationships, SQLite3Connector } from "../../deps.ts";
 import { config } from "../config.ts";
+import { log } from "../log.ts";
 import { generateSalt, hashPassword } from "../utils/auth.ts";
 import {
 	Log,

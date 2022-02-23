@@ -1,4 +1,4 @@
-import { DataTypes, Model } from "../deps.ts";
+import { DataTypes, Model } from "../../deps.ts";
 import { User } from "./mod.ts";
 
 export class Room extends Model {

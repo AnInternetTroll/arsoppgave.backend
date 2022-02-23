@@ -1,4 +1,4 @@
-import { DataTypes, Model } from "../deps.ts";
+import { DataTypes, Model } from "../../deps.ts";
 
 export class User extends Model {
 	static table = "users";

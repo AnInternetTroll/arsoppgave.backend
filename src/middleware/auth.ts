@@ -1,5 +1,4 @@
-import type { Context } from "../deps.ts";
-import { Status } from "../deps.ts";
+import { type Context, Status } from "../../deps.ts";
 import { Token } from "../models/mod.ts";
 import { User } from "../models/user.ts";
 import { UserLocal } from "../models/user_local.ts";

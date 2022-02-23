@@ -1,4 +1,5 @@
-import { isHttpError, join, log, relative, Router, Status } from "../deps.ts";
+import { isHttpError, join, relative, Router, Status } from "../../deps.ts";
+import { log } from "../log.ts";
 import type { Route } from "../middleware/types.d.ts";
 
 export const router = new Router();

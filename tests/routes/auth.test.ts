@@ -1,6 +1,6 @@
 import { assert, assertEquals, FakeTime, superoak } from "../deps.ts";
-import { Status } from "../../src/deps.ts";
-import { app } from "../../src/mod.ts";
+import { Status } from "../../deps.ts";
+import { app } from "../../main.ts";
 import { config } from "../../src/config.ts";
 import {
 	email,
