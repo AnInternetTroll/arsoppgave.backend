@@ -1,3 +1,7 @@
+// Handles `.env` file.
+// Technically can be ignored as you can always set env variables yourself.
+import "https://deno.land/x/dotenv@v3.1.0/load.ts";
+
 // The ORM library. The way to save all kinds of data
 export {
 	Database,
@@ -37,3 +41,4 @@ export {
 	Session,
 	SqliteStore,
 } from "https://deno.land/x/oak_sessions@v3.2.3/mod.ts";
+export * as log from "https://deno.land/std@0.126.0/log/mod.ts";

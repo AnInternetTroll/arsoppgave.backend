@@ -1,6 +1,4 @@
-// Handles `.env` file.
-// Technically can be ignored as you can always set env variables yourself.
-import "https://deno.land/x/dotenv@v3.1.0/load.ts";
+import "../deps.ts";
 
 interface IConfig {
 	// HTTP port to be used

@@ -34,9 +34,11 @@ test:
 	rm -rf cov
 	RUST_BACKTRACE=full LOG_LEVEL=DEBUG $(DENO) test $(DENO_FLAGS) --coverage=cov
 
-container:
-	$(CONTAINER_ENGINE) build -t app .
-	$(CONTAINER_ENGINE) run -it -p 8080:8080 app
+container-make:
+	$(CONTAINER_ENGINE) build -t arsoppgave.backend .
+
+container-run:
+	$(CONTAINER_ENGINE) run -it -p 8080:8080 arsoppgave.backend
 
 coverage:
 	$(DENO) coverage cov --lcov > lcov.info
