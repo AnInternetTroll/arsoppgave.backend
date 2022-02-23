@@ -6,5 +6,3 @@ export const email = "iloveyou@localhost.com";
 export const username2 = "Bobby Tables";
 export const password2 = "correcthorsebatterystable";
 export const email2 = "bobby@localhost.com";
-
-Deno.env.set("LOG_LEVEL", "CRITICAL");

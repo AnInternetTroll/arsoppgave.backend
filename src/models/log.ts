@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "../../deps.ts";
-import { User } from "./mod.ts";
+import { log } from "../log.ts";
 
 export class Log extends Model {
 	static table = "logs";
@@ -7,20 +7,15 @@ export class Log extends Model {
 
 	id!: number;
 	message!: string;
-	action!: "DELETE" | "ADD";
-	userId!: number;
+	level!: log.LevelName;
 
 	static fields = {
 		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },
 
 		message: DataTypes.STRING,
 
-		action: DataTypes.enum(["DELETE", "ADD"]),
+		level: DataTypes.enum(Object.values(log.LogLevels)),
 	};
-
-	static user(): Promise<User> {
-		return this.hasOne(User) as Promise<User>;
-	}
 
 	static defaults = {
 		message: "No message provided.",

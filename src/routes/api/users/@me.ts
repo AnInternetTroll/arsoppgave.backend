@@ -23,14 +23,7 @@ export default {
 		await user.delete();
 
 		// How do you save a log of someone who is deleted?
-		try {
-			await Log.create({
-				userId: user.id,
-				action: "DELETE",
-			});
-		} catch (err) {
-			log.debug(err);
-		}
+		log.info(`User [${user.username}] (${user.id}) has been DELETED`);
 
 		ctx.response.status = Status.NoContent;
 	},

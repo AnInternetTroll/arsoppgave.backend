@@ -45,10 +45,7 @@ export default {
 			userId: user.id,
 		});
 
-		await Log.create({
-			userId: user.id,
-			action: "ADD",
-		});
+		log.info(`User [${user.username}] (${user.id}) has been ADDED`);
 
 		ctx.response.status = Status.NoContent;
 	},

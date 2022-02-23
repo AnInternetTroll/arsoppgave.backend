@@ -32,7 +32,7 @@ dev:
 
 test:
 	rm -rf cov
-	RUST_BACKTRACE=full LOG_LEVEL=DEBUG $(DENO) test $(DENO_FLAGS) --coverage=cov
+	LOG_LEVEL=CRITICAL RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS) --coverage=cov
 
 container-build:
 	$(CONTAINER_ENGINE) build -t arsoppgave.backend .

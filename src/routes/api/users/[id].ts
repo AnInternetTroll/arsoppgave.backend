@@ -1,4 +1,3 @@
-import { log } from "../../../log.ts";
 import { authenticate } from "../../../middleware/auth.ts";
 import type { Route } from "../../../middleware/types.d.ts";
 import { User } from "../../../models/mod.ts";

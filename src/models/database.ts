@@ -27,7 +27,6 @@ export const db = new Database(connector);
 Relationships.belongsTo(UserLocal, User);
 Relationships.belongsTo(UserDiscord, User);
 Relationships.belongsTo(Token, User);
-Relationships.belongsTo(Log, User);
 Relationships.belongsTo(Member, Room);
 Relationships.belongsTo(Member, User);
 Relationships.oneToOne(Room, Member);
