@@ -7,7 +7,7 @@ export class Log extends Model {
 
 	id!: number;
 	message!: string;
-	level!: log.LevelName;
+	level!: string;
 
 	static fields = {
 		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },

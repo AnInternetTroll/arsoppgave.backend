@@ -1,7 +1,7 @@
 import { Status } from "../../../../deps.ts";
 import { log } from "../../../log.ts";
 import type { Route } from "../../../middleware/types.d.ts";
-import { Log, User, UserLocal } from "../../../models/mod.ts";
+import { User, UserLocal } from "../../../models/mod.ts";
 import { generateSalt, hashPassword } from "../../../utils/auth.ts";
 
 export default {

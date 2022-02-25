@@ -8,7 +8,6 @@ Deno.test({
 	name: "orm-new-local-user-and-token",
 	async fn() {
 		// Constants
-
 		const salt = generateSalt();
 
 		// Make a user before saving them to the users_local table
@@ -16,6 +15,7 @@ Deno.test({
 			username,
 			email,
 			role: "user",
+			id: 999,
 		});
 
 		// Usernames are public, emails are not
@@ -26,6 +26,7 @@ Deno.test({
 			salt,
 			hash: await hashPassword(password, salt),
 			userId: user.id,
+			id: 999,
 		});
 
 		const userLocal = await UserLocal.where("userId", "=", user.id)

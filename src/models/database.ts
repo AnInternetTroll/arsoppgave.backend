@@ -41,7 +41,7 @@ try {
 		Member,
 		Room,
 	]);
-	await db.sync({ drop: true });
+	if (config.enviorment === "development") await db.sync({ drop: true });
 } catch (err) {
 	log.error(err);
 	// it's probably ok
@@ -50,8 +50,10 @@ try {
 // Add or edit admin user
 
 let admin = await User.find(1) as User;
+let shouldUpdate = true;
 if (!admin) {
 	admin = new User();
+	shouldUpdate = false;
 }
 
 admin.email = config.adminEmail;
@@ -67,5 +69,10 @@ adminLocal.hash = await hashPassword(config.adminPassword, salt);
 adminLocal.id = 1;
 adminLocal.userId = admin.id;
 
-await admin.save();
-await adminLocal.save();
+if (shouldUpdate) {
+	await admin.update();
+	await adminLocal.update();
+} else {
+	await admin.save();
+	await adminLocal.save();
+}
