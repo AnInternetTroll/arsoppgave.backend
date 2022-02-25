@@ -3,14 +3,14 @@ import { log } from "../deps.ts";
 import { Log } from "./models/mod.ts";
 
 class DatabaseHandler extends log.handlers.BaseHandler {
-	handle(logRecord: log.LogRecord): void {
-		if (this.level > logRecord.level) return;
+	handle(logRecord: log.LogRecord): Promise<Log> | void {
+		if (log.LogLevels.INFO > logRecord.level) return;
 
 		const msg = this.format(logRecord);
-		Log.create({
+		return Log.create({
 			message: msg,
 			level: logRecord.level,
-		});
+		}) as Promise<Log>;
 	}
 }
 

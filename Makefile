@@ -5,7 +5,7 @@ CONTAINER_ENGINE=$(shell which podman 2> /dev/null || which docker)
 
 # These are the variables the server uses
 # They should be also put in a `.env` file
-ENV_VARS=PORT,SQLITE,ADMIN_USERNAME,ADMIN_PASSWORD,ADMIN_EMAIL,LOG_LEVEL
+ENV_VARS=PORT,SQLITE,ADMIN_USERNAME,ADMIN_PASSWORD,ADMIN_EMAIL,LOG_LEVEL,ENVIORMENT
 WRITE_FILES=database.sqlite,database.sqlite-journal,server.log
 
 # This configuration file is used for `fmt` and `lint`
@@ -25,14 +25,14 @@ DENO_FLAGS=\
 
 # If this crashes in prod I better have some good stack trace of it
 run:
-	RUST_BACKTRACE=full $(DENO) run $(DENO_FLAGS) main.ts
+	RUST_BACKTRACE=full ENVIORMENT=production $(DENO) run $(DENO_FLAGS) main.ts
 
 dev:
-	RUST_BACKTRACE=full $(DENO) run --watch $(DENO_FLAGS) main.ts
+	RUST_BACKTRACE=full ENVIORMENT=development $(DENO) run --watch $(DENO_FLAGS) main.ts
 
 test:
 	rm -rf cov
-	LOG_LEVEL=CRITICAL RUST_BACKTRACE=full $(DENO) test $(DENO_FLAGS) --coverage=cov
+	RUST_BACKTRACE=full LOG_LEVEL=CRITICAL ENVIORMENT=development $(DENO) test $(DENO_FLAGS) --coverage=cov
 
 container-build:
 	$(CONTAINER_ENGINE) build -t arsoppgave.backend .

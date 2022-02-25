@@ -9,6 +9,7 @@ interface IConfig {
 	adminPassword: string;
 	adminEmail: string;
 	logLevel: "NOTSET" | "DEBUG" | "INFO" | "WARNING" | "ERROR" | "CRITICAL";
+	enviorment: "development" | "production";
 }
 
 export const config: IConfig = {
@@ -19,4 +20,6 @@ export const config: IConfig = {
 	adminEmail: Deno.env.get("ADMIN_EMAIL")!,
 	// @ts-ignore probably fine
 	logLevel: Deno.env.get("LOG_LEVEL") || "INFO",
+	// @ts-ignore also probably ok
+	enviorment: Deno.env.get("ENVIORMENT") || "development",
 };
