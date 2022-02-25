@@ -1,3 +1,4 @@
+import { Status } from "../../../../deps.ts";
 import { authenticate } from "../../../middleware/auth.ts";
 import type { Route } from "../../../middleware/types.d.ts";
 import { User } from "../../../models/mod.ts";
@@ -7,6 +8,7 @@ export default {
 		const authenticatedUser = await authenticate(ctx, false);
 		// @ts-ignore what?
 		const user = await User.find(ctx?.params?.id) as User;
+		if (!user) return ctx.throw(Status.NotFound);
 
 		// Allow admins, supers, and the user themselves
 		// to see their own email

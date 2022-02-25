@@ -19,6 +19,7 @@ router.use(async (ctx, next) => {
 					break;
 				}
 			}
+			log.error(err);
 			ctx.response.status = err.status || Status.InternalServerError;
 			ctx.response.headers.set("content-type", "application/json");
 			ctx.response.body = JSON.stringify({
@@ -26,6 +27,7 @@ router.use(async (ctx, next) => {
 				stack: err.stack,
 			});
 		} else {
+			log.error(err);
 			ctx.response.status = Status.InternalServerError;
 			ctx.response.headers.set("content-type", "application/json");
 			ctx.response.body = JSON.stringify(err);
@@ -78,7 +80,11 @@ function isRoute(route: any): route is Route {
  * @param router The router where those routes get added
  */
 async function readDir(dir: URL, router: Router): Promise<void> {
-	for await (const file of Deno.readDir(dir)) {
+	// Sort the entries of a folder
+	const entries = [...Deno.readDirSync(dir)];
+	entries.sort((a, b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
+
+	for (const file of entries) {
 		// This returns an absolute URL
 		// /home/user/project/src/routes/etc...
 		const path = join(dir.pathname, file.name);

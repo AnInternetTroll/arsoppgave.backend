@@ -111,6 +111,8 @@ Deno.test({
 						"authorization",
 						`Bearer ${tokenResponse.body.token}`,
 					).expect(Status.Forbidden).expect("Content-Type", "application/json");
+				} catch (err) {
+					throw err;
 				} finally {
 					time.restore();
 				}
