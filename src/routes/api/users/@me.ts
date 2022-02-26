@@ -1,7 +1,7 @@
 import type { Route } from "../../../middleware/types.d.ts";
 import { authenticate } from "../../../middleware/auth.ts";
 import { Status } from "../../../../deps.ts";
-import { Token, type User, UserLocal } from "../../../models/mod.ts";
+import { Token, UserLocal } from "../../../models/mod.ts";
 import { log } from "../../../log.ts";
 import { patchUser } from "../../../utils/auth.ts";
 
