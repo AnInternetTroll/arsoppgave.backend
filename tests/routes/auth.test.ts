@@ -739,3 +739,24 @@ Deno.test({
 		).expect(Status.Forbidden);
 	},
 });
+
+Deno.test({
+	name: "get-by-id-not-found",
+	async fn() {
+		const request = await superoak(app);
+		await request.get(`/api/users/${Math.round(Math.random() * 10000000)}`)
+			.expect(Status.NotFound);
+	},
+});
+
+Deno.test({
+	name: "patch-by-id-not-found",
+	async fn() {
+		const request = await superoak(app);
+		await request.patch(`/api/users/${Math.round(Math.random() * 10000000)}`)
+			.set(
+				"authorization",
+				`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
+			).expect(Status.NotFound);
+	},
+});
