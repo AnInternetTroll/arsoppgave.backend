@@ -260,6 +260,43 @@ Deno.test({
 		});
 		assert(patchName);
 
+		const patchNameById = await t.step({
+			name: "patch-name-by-id",
+			async fn() {
+				const request = await superoak(app);
+				await request.patch("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					username: "TestyTest",
+				})).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				const request2 = await superoak(app);
+				const responseMe = await request2.get(`/api/users/${user.id}`).set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				assertEquals(responseMe.body.username, "TestyTest");
+				const request3 = await superoak(app);
+				const responseMe2 = await request3.patch(`/api/users/${user.id}`).set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					username,
+				})).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				assertEquals(responseMe2.body.username, username);
+			},
+		});
+		assert(patchNameById);
+
 		const patchDuplicateName = await t.step({
 			name: "patch-duplicate-name",
 			async fn() {
@@ -299,6 +336,20 @@ Deno.test({
 			},
 		});
 		assert(patchBadBody);
+
+		const patchForbidden = await t.step({
+			name: "patch-forbidden",
+			async fn() {
+				const request = await superoak(app);
+				await request.patch("/api/users/1").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					username: "beep",
+				}).toString()).expect(Status.Forbidden);
+			},
+		});
+		assert(patchForbidden);
 
 		const getUserById = await t.step({
 			name: "user-by-id",
@@ -621,5 +672,28 @@ Deno.test({
 			`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
 		).expect(Status.OK);
 		assert((response.body as User).email);
+	},
+});
+
+Deno.test({
+	name: "patch-unauthorized",
+	async fn() {
+		const request = await superoak(app);
+		await request.patch("/api/users/1").set("Content-Type", "application/json").send(JSON.stringify({
+			username: "beep",
+		}).toString()).expect(Status.Unauthorized);
+	},
+});
+
+Deno.test({
+	name: "patch-super-forbidden",
+	async fn() {
+		const request = await superoak(app);
+		await request.patch("/api/users/1").set(
+			"authorization",
+			`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
+		).set("Content-Type", "application/json").send(JSON.stringify({
+			username: "beep",
+		}).toString()).expect(Status.Forbidden);
 	},
 });

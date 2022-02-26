@@ -2,6 +2,7 @@ import { Status } from "../../../../deps.ts";
 import { authenticate } from "../../../middleware/auth.ts";
 import type { Route } from "../../../middleware/types.d.ts";
 import { User } from "../../../models/mod.ts";
+import { patchUser } from "../../../utils/auth.ts";
 
 export default {
 	async GET(ctx) {
@@ -23,5 +24,20 @@ export default {
 		}
 		ctx.response.headers.set("content-type", "application/json");
 		ctx.response.body = JSON.stringify(user);
+	},
+	async PATCH(ctx, next) {
+		const authenticatedUser = await authenticate(ctx);
+		if (!authenticatedUser) return await next();
+		// @ts-ignore what?
+		const user = await User.find(ctx?.params?.id) as User;
+		if (!user) return ctx.throw(Status.NotFound);
+
+		if (
+			(user.id !== authenticatedUser.id) && (authenticatedUser.role === "user")
+		) {
+			ctx.throw(Status.Forbidden);
+		}
+
+		await patchUser(ctx, user);
 	},
 } as Route;
