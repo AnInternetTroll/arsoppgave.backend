@@ -344,9 +344,11 @@ Deno.test({
 				await request.patch("/api/users/1").set(
 					"authorization",
 					`Basic ${btoa(`${email}:${password}`)}`,
-				).set("Content-Type", "application/json").send(JSON.stringify({
-					username: "beep",
-				}).toString()).expect(Status.Forbidden);
+				).set("Content-Type", "application/json").send(
+					JSON.stringify({
+						username: "beep",
+					}).toString(),
+				).expect(Status.Forbidden);
 			},
 		});
 		assert(patchForbidden);
@@ -679,9 +681,12 @@ Deno.test({
 	name: "patch-unauthorized",
 	async fn() {
 		const request = await superoak(app);
-		await request.patch("/api/users/1").set("Content-Type", "application/json").send(JSON.stringify({
-			username: "beep",
-		}).toString()).expect(Status.Unauthorized);
+		await request.patch("/api/users/1").set("Content-Type", "application/json")
+			.send(
+				JSON.stringify({
+					username: "beep",
+				}).toString(),
+			).expect(Status.Unauthorized);
 	},
 });
 
@@ -692,8 +697,10 @@ Deno.test({
 		await request.patch("/api/users/1").set(
 			"authorization",
 			`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
-		).set("Content-Type", "application/json").send(JSON.stringify({
-			username: "beep",
-		}).toString()).expect(Status.Forbidden);
+		).set("Content-Type", "application/json").send(
+			JSON.stringify({
+				username: "beep",
+			}).toString(),
+		).expect(Status.Forbidden);
 	},
 });
