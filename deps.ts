@@ -23,20 +23,20 @@ export {
 	type Route,
 	Router,
 	Status,
-} from "https://deno.land/x/oak@v10.1.0/mod.ts";
+} from "https://deno.land/x/oak@v10.4.0/mod.ts";
 
 // Utilities
 export {
 	encode as encodeHex,
-} from "https://deno.land/std@0.119.0/encoding/hex.ts";
+} from "https://deno.land/std@0.127.0/encoding/hex.ts";
 export {
 	encode as encodeBase64,
-} from "https://deno.land/std@0.119.0/encoding/base64.ts";
+} from "https://deno.land/std@0.127.0/encoding/base64.ts";
 export {
 	join,
 	normalize,
 	relative,
-} from "https://deno.land/std@0.119.0/path/mod.ts";
+} from "https://deno.land/std@0.127.0/path/mod.ts";
 export {
 	Session,
 	SqliteStore,
