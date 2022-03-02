@@ -11,6 +11,7 @@ export class Member extends Model {
 
 	static fields = {
 		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },
+		read: DataTypes.BOOLEAN,
 	};
 
 	static user(): Promise<User> {
@@ -20,4 +21,8 @@ export class Member extends Model {
 	static room(): Promise<Room> {
 		return this.hasOne(Room) as Promise<Room>;
 	}
+
+	static defaults = {
+		read: false,
+	};
 }

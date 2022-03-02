@@ -21,7 +21,11 @@ export function generateSalt(): string {
 	return encodeBase64(salt);
 }
 
-export async function patchUser(ctx: Context, user: User) {
+export async function patchUser(
+	ctx: Context,
+	user: User,
+	authorizedUser: User,
+) {
 	if (user.role === "super") {
 		return ctx.throw(
 			Status.Forbidden,
@@ -37,7 +41,18 @@ export async function patchUser(ctx: Context, user: User) {
 
 	const body = await bodyObj.value;
 
-	user.username = body.username;
+	user.username = body?.username || user.username;
+
+	if (body.role) {
+		if (authorizedUser.role !== "super") {
+			ctx.throw(
+				Status.Forbidden,
+				"Only super accounts are allowed to edit a user's role.",
+			);
+		} else if (body.role === "super") {
+			ctx.throw(Status.Forbidden, "No super accounts are allowed to be added.");
+		} else user.role = body?.role || user.role;
+	}
 
 	let newUser: User;
 	try {

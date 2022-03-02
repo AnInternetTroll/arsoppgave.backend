@@ -15,8 +15,4 @@ export class Room extends Model {
 	static owner(): Promise<User> {
 		return this.hasOne(User) as Promise<User>;
 	}
-
-	static defaults = {
-		read: true,
-	};
 }

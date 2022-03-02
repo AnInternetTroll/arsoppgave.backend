@@ -260,6 +260,23 @@ Deno.test({
 		});
 		assert(patchName);
 
+		const patchRole = await t.step({
+			name: "patch-role",
+			async fn() {
+				const request = await superoak(app);
+				await request.patch("/api/users/@me").set(
+					"authorization",
+					`Basic ${btoa(`${email}:${password}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					role: "admin",
+				})).expect(Status.Forbidden).expect(
+					"Content-Type",
+					"application/json",
+				);
+			},
+		});
+		assert(patchRole);
+
 		const patchNameById = await t.step({
 			name: "patch-name-by-id",
 			async fn() {
@@ -331,6 +348,42 @@ Deno.test({
 			},
 		});
 		assert(patchNameByIdAsSuper);
+
+		const patchRoleByIdAsSuper = await t.step({
+			name: "patch-role-by-id",
+			async fn() {
+				const request = await superoak(app);
+				await request.patch(`/api/users/${user.id}`).set(
+					"authorization",
+					`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					role: "admin",
+				})).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				const request2 = await superoak(app);
+				const responseMe = await request2.get(`/api/users/${user.id}`).expect(
+					Status.OK,
+				).expect(
+					"Content-Type",
+					"application/json",
+				);
+				assertEquals(responseMe.body.role, "admin");
+				const request3 = await superoak(app);
+				const responseMe2 = await request3.patch(`/api/users/${user.id}`).set(
+					"authorization",
+					`Basic ${btoa(`${config.adminEmail}:${config.adminPassword}`)}`,
+				).set("Content-Type", "application/json").send(JSON.stringify({
+					role: user.role,
+				})).expect(Status.OK).expect(
+					"Content-Type",
+					"application/json",
+				);
+				assertEquals(responseMe2.body.role, user.role);
+			},
+		});
+		assert(patchRoleByIdAsSuper);
 
 		const patchDuplicateName = await t.step({
 			name: "patch-duplicate-name",

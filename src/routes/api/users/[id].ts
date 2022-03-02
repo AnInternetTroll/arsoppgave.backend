@@ -38,6 +38,6 @@ export default {
 			ctx.throw(Status.Forbidden);
 		}
 
-		await patchUser(ctx, user);
+		await patchUser(ctx, user, authenticatedUser);
 	},
 } as Route;

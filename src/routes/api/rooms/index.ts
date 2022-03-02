@@ -34,6 +34,7 @@ export default {
 		await Member.create({
 			userId: user.id,
 			roomId: room.id,
+			read: true,
 		});
 
 		ctx.response.headers.set("content-type", "application/json");

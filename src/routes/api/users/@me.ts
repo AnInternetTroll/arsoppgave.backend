@@ -32,6 +32,6 @@ export default {
 		const user = await authenticate(ctx);
 		if (!user) return await next();
 
-		await patchUser(ctx, user);
+		await patchUser(ctx, user, user);
 	},
 } as Route;
