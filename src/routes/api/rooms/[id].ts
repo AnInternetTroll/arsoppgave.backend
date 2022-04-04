@@ -1,7 +1,7 @@
 import { Status } from "../../../../deps.ts";
 import { authenticate } from "../../../middleware/auth.ts";
 import type { Route } from "../../../middleware/types.d.ts";
-import { Member, Room, User } from "../../../models/mod.ts";
+import { Member, Room } from "../../../models/mod.ts";
 
 export default {
 	async GET(ctx, next) {
