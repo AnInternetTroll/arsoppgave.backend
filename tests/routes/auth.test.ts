@@ -102,7 +102,7 @@ Deno.test({
 					assertEquals(user.email, email);
 					assertEquals(user.username, username);
 					assert("id" in user);
-					assert(typeof user.id === "number");
+					assert(typeof user.id === "string");
 
 					time.tick(120 * 60 * 1000); // 120min
 					const tokenExpiredRequest = await superoak(app);

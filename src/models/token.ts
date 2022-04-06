@@ -1,18 +1,20 @@
 import { DataTypes, Model } from "../../deps.ts";
+import type { ModelDefaults, ModelFields } from "../../deps.ts";
 import { User } from "./mod.ts";
+import { IdDefault, IdField } from "./utils.ts";
 
 export class Token extends Model {
 	static table = "tokens";
 	static timestamps = true;
 
-	id!: number;
+	id!: string;
 	token!: string;
 	exp!: Date;
 	scope!: string;
 	userId!: number;
 
-	static fields = {
-		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },
+	static fields: ModelFields = {
+		id: IdField,
 
 		token: {
 			type: DataTypes.STRING,
@@ -33,7 +35,8 @@ export class Token extends Model {
 		return this.hasOne(User) as Promise<User>;
 	}
 
-	static defaults = {
+	static defaults: ModelDefaults = {
+		id: IdDefault,
 		scope: "read",
 	};
 }

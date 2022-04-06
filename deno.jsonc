@@ -7,7 +7,7 @@
 		},
 		"files": {
 			"exclude": [
-				"coverage"
+				"cov"
 			]
 		}
 	}

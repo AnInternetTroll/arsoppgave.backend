@@ -45,6 +45,4 @@ ADD . .
 # Compile the main app so that it doesn't need to be compiled each startup/entry.
 RUN deno cache --no-check main.ts
 
-RUN make test
-
 CMD ["make", "run"]

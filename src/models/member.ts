@@ -1,16 +1,18 @@
 import { DataTypes, Model } from "../../deps.ts";
+import type { ModelDefaults, ModelFields } from "../../deps.ts";
 import { Room, User } from "./mod.ts";
+import { IdDefault, IdField } from "./utils.ts";
 
 export class Member extends Model {
 	static table = "members";
 	static timestamps = true;
 
-	id!: number;
+	id!: string;
 	userId!: number;
 	roomId!: number;
 
-	static fields = {
-		id: { primaryKey: true, autoIncrement: true, type: DataTypes.INTEGER },
+	static fields: ModelFields = {
+		id: IdField,
 		read: DataTypes.BOOLEAN,
 	};
 
@@ -22,7 +24,8 @@ export class Member extends Model {
 		return this.hasOne(Room) as Promise<Room>;
 	}
 
-	static defaults = {
+	static defaults: ModelDefaults = {
+		id: IdDefault,
 		read: false,
 	};
 }

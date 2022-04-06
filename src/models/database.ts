@@ -59,14 +59,14 @@ if (!admin) {
 admin.email = config.adminEmail;
 admin.username = config.adminUsername;
 admin.role = "super";
-admin.id = 1;
+admin.id = "1";
 
-let adminLocal = await UserLocal.find(1) as UserLocal;
+let adminLocal = await UserLocal.find("1") as UserLocal;
 if (!adminLocal) adminLocal = new UserLocal();
 const salt = generateSalt();
 adminLocal.salt = salt;
 adminLocal.hash = await hashPassword(config.adminPassword, salt);
-adminLocal.id = 1;
+adminLocal.id = "1";
 adminLocal.userId = admin.id;
 
 if (shouldUpdate) {
