@@ -50,6 +50,7 @@ coverage:
 diagram:
 	$(DIA) -e diagrams/routes.png -t png diagrams/routes.dia
 	$(DIA) -e diagrams/schema.png -t png diagrams/schema.dia
+	$(DIA) -e diagrams/auth_flow.png -t png diagrams/auth_flow.dia
 
 fmt:
 	$(DENO) fmt --config=$(CONFIG) --ignore=cov
