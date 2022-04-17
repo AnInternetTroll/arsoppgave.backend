@@ -1,0 +1,13 @@
+.dockerignore
+.editorconfig
+.git
+.gitignore
+.vscode
+README.md
+cov
+diagrams
+docs
+lcov.info
+plan.md
+server.log
+tests

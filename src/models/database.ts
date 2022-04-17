@@ -42,6 +42,7 @@ try {
 		Room,
 	]);
 	if (config.enviorment === "development") await db.sync({ drop: true });
+	else db.sync({ drop: false });
 } catch (err) {
 	log.error(err);
 	// it's probably ok
